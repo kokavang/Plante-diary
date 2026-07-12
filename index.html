@@ -188,6 +188,11 @@
             font-weight: bold;
         }
         .quick-water-btn:hover { background-color: #01579b; }
+        
+        /* 메인 버튼 공통 */
+        .edit-btn {
+            background: #fff; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #f57c00; border-color: #f57c00;
+        }
 
         /* 하단 일괄 플로팅 바 */
         .floating-action-bar { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 8px 24px rgba(2,136,209,0.3); z-index: 90; justify-content: space-between; align-items: center; }
@@ -217,12 +222,24 @@
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
         .form-group input, .form-group select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; }
+        
+        /* 폼 버튼 그룹 구조 변경 */
+        .form-action-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .btn-submit { flex: 2; padding: 14px; background-color: #2e7d32; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; }
+        /* 🌟 수정페이지 전용 위험 구역 삭제 버튼 추가 */
+        .btn-delete-hidden {
+            flex: 1; padding: 14px; background-color: #d32f2f; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; display: none;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- 헤더 (글자 대신 기호 위주 매핑) -->
+    <!-- 헤더 -->
     <div class="header">
         <h1>🌱 🗓️</h1>
         <div class="header-buttons">
@@ -278,7 +295,7 @@
     <button class="bulk-water-btn" onclick="executeBulkWatering()">💧</button>
 </div>
 
-<!-- 등록/수정 모달 (입력창 정보는 명확하게 한글 유지) -->
+<!-- 등록/수정 모달 (삭제 버튼이 동적으로 나타납니다) -->
 <div class="modal-overlay" id="plantModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -318,7 +335,12 @@
             <label for="plantImage">식물 사진 (선택 사항)</label>
             <input type="file" id="plantImage" accept="image/*">
         </div>
-        <button id="submitBtn" class="btn-submit" onclick="handleSubmit()">등록 완료</button>
+        
+        <!-- 하단 액션 통합 레이아웃 변경 -->
+        <div class="form-action-group">
+            <button id="submitBtn" class="btn-submit" onclick="handleSubmit()">등록 완료</button>
+            <button id="deleteBtnForm" class="btn-delete-hidden" onclick="executeDeleteFromForm()">삭제</button>
+        </div>
     </div>
 </div>
 
@@ -341,7 +363,6 @@
         const monday = new Date(today);
         monday.setDate(today.getDate() + distanceToMonday);
 
-        // 요일을 영문 식별 약어로 치환
         const dayNames = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
         for (let i = 0; i < 7; i++) {
             const nextDay = new Date(monday);
@@ -414,7 +435,7 @@
         displayPlants();
     }
 
-    // 메인 리스트 표시 및 날짜 계산
+    // 메인 리시트 표시 (식물 내부 정보 ✕ 삭제 기호 완전 삭제 완료)
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -473,7 +494,8 @@
             card.className = 'plant-card';
             card.innerHTML = `
                 <div class="checkbox-container"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
-                <button class="shelf-action-trigger" onclick="openShelfMenu(${originalIndex})">⚙️</button>
+                <!-- 선반형 기어 클릭 시 수정 페이지로만 리다이렉트 -->
+                <button class="shelf-action-trigger" onclick="startEdit(${originalIndex})">⚙️</button>
                 <div class="shelf-dday">${shelfDdayText}</div>
                 <img src="${imageSrc}" class="plant-img" alt="${plant.name}">
                 <div class="plant-info">
@@ -484,7 +506,6 @@
                     <div class="card-buttons">
                         <button class="quick-water-btn" onclick="waterPlant(${originalIndex})">💧 완료</button>
                         <button class="edit-btn" onclick="startEdit(${originalIndex})">✏️</button>
-                        <button class="delete-btn" onclick="deletePlant(${originalIndex})">✕</button>
                     </div>
                 </div>
             `;
@@ -501,7 +522,7 @@
         saveAndRender();
     }
 
-    // 월간 달력 드로잉 엔진
+    // 월간 달력 엔진
     function buildMonthlyCalendar() {
         const gridBody = document.getElementById('calendarGridBody');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -560,11 +581,6 @@
     function openMonthModal() { document.getElementById('monthModal').style.display = 'flex'; buildMonthlyCalendar(); }
     function closeMonthModal() { document.getElementById('monthModal').style.display = 'none'; }
 
-    function openShelfMenu(index) {
-        const choice = confirm(`[${plants[index].name}] ✏️?\n(Cancel ➡️ ✕)`);
-        if(choice) startEdit(index);
-        else if(confirm("✕?")) deletePlant(index);
-    }
     function toggleCheck(index, checkbox) {
         if (checkbox.checked) { if (!checkedIndices.includes(index)) checkedIndices.push(index); } 
         else { checkedIndices = checkedIndices.filter(i => i !== index); }
@@ -583,7 +599,12 @@
         checkedIndices = []; updateFloatingBar(); saveAndRender();
     }
     
-    function openModal() { document.getElementById('plantModal').style.display = 'flex'; initFormDates(); }
+    function openModal() { 
+        document.getElementById('plantModal').style.display = 'flex'; 
+        document.getElementById('deleteBtnForm').style.display = 'none'; // 등록 모드일 땐 삭제 버튼 완전히 숨김
+        initFormDates(); 
+    }
+    
     function closeModal() { document.getElementById('plantModal').style.display = 'none'; resetFormState(); clearInputs(); }
     
     function initFormDates() {
@@ -616,13 +637,13 @@
         }
     }
 
-    // 데이터 구조 바인딩
     function executeSaveOrUpdate(name, location, cycle, adoptDate, lastDate, repotDate, imageData) {
         const plantData = { name, location, cycle, adoptDate, lastDate, repotDate, image: imageData };
         if (editIndex === null) { plants.push(plantData); } else { plants[editIndex] = plantData; }
         saveAndRender(); closeModal();
     }
 
+    // 🌟 수정 모드 진입 (여기서만 빨간 삭제 버튼이 노출되도록 제어)
     function startEdit(index) {
         editIndex = index; const plant = plants[index];
         document.getElementById('plantName').value = plant.name; document.getElementById('plantLocation').value = plant.location;
@@ -630,13 +651,35 @@
         document.getElementById('adoptDate').value = plant.adoptDate ? plant.adoptDate.split('T')[0] : '';
         document.getElementById('lastWateredDate').value = plant.lastDate.split('T')[0];
         document.getElementById('repotDate').value = plant.repotDate ? plant.repotDate.split('T')[0] : '';
-        document.getElementById('modalTitle').innerText = `식물 수정: ${plant.name}`; document.getElementById('submitBtn').innerText = "수정 완료";
+        
+        document.getElementById('modalTitle').innerText = `식물 수정: ${plant.name}`; 
+        document.getElementById('submitBtn').innerText = "수정 완료";
+        
+        // 🌟 수정 페이지에서만 안전하게 삭제 가능하도록 버튼 등장 시킴
+        document.getElementById('deleteBtnForm').style.display = 'block';
         document.getElementById('plantModal').style.display = 'flex';
     }
     
-    function resetFormState() { document.getElementById('modalTitle').innerText = "새 식물 등록하기"; document.getElementById('submitBtn').innerText = "등록 완료"; editIndex = null; }
+    // 🌟 수정창 내부에서 직접 호출하는 물리 삭제 기능
+    function executeDeleteFromForm() {
+        if(editIndex !== null) {
+            if(confirm(`정말 [${plants[editIndex].name}] 식물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.`)) {
+                checkedIndices = checkedIndices.filter(i => i !== editIndex);
+                updateFloatingBar();
+                plants.splice(editIndex, 1);
+                saveAndRender();
+                closeModal(); // 지우고 나서 모달창까지 깨끗하게 서랍 닫기
+            }
+        }
+    }
+    
+    function resetFormState() { 
+        document.getElementById('modalTitle').innerText = "새 식물 등록하기"; 
+        document.getElementById('submitBtn').innerText = "등록 완료"; 
+        document.getElementById('deleteBtnForm').style.display = 'none'; // 초기화
+        editIndex = null; 
+    }
     function clearInputs() { document.getElementById('plantName').value = ''; document.getElementById('waterCycle').value = ''; document.getElementById('plantImage').value = ''; }
-    function deletePlant(index) { checkedIndices = checkedIndices.filter(i => i !== index); updateFloatingBar(); plants.splice(index, 1); saveAndRender(); }
     
     window.onclick = function(e) {
         if (e.target == document.getElementById('plantModal')) closeModal();
