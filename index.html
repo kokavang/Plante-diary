@@ -62,6 +62,7 @@
         .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
         .plant-list.view-list .plant-card {
             background: #fff; border: 1px solid #f0f2f0; border-radius: 20px; overflow: hidden; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: transform 0.2s ease;
+            position: relative;
         }
         .plant-list.view-list .plant-card:hover { transform: translateY(-2px); }
         .plant-list.view-list .plant-img { width: 68px; height: 68px; object-fit: cover; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
@@ -86,12 +87,10 @@
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
             background-size: 100% 180px; border-radius: 12px; box-sizing: border-box;
         }
-        .plant-card { background: #fff; position: relative; cursor: pointer; box-sizing: border-box; }
-        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; border: none; padding: 0; }
+        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; border: none; padding: 0; position: relative; box-sizing: border-box; }
         .plant-list.view-shelf .plant-img { width: 100%; height: 90px; object-fit: cover; border-radius: 12px 12px 0 0; }
         .plant-list.view-shelf .plant-info { padding: 6px 8px; text-align: center; box-sizing: border-box; overflow: hidden; width: 100%; display: block; }
         .plant-list.view-shelf .plant-info h3 { margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; display: block; text-align: center; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 95%); mask-image: linear-gradient(to right, black 75%, transparent 95%); }
-        .plant-list.view-shelf .card-text-zone, .plant-list.view-shelf .card-buttons { display: none; }
         
         .plant-list.view-shelf .shelf-dday { 
             position: absolute; bottom: 50px; right: 6px; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 8px; z-index: 4; box-shadow: 0 2px 5px rgba(0,0,0,0.15); color: white;
@@ -103,10 +102,6 @@
         /* 체크박스 및 기어 단추 공통 위치 */
         .checkbox-container { position: absolute; top: 6px; left: 6px; z-index: 5; background: rgba(255, 255, 255, 0.9); padding: 4px; border-radius: 6px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .plant-checkbox { width: 15px; height: 16px; cursor: pointer; margin: 0; }
-        
-        /* 🌟 중요 스타일 격리 처리 */
-        .plant-list.view-list .shelf-dday, 
-        .plant-list.view-list .shelf-action-trigger { display: none !important; }
         
         .plant-list.view-shelf .shelf-action-trigger { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
 
@@ -302,7 +297,6 @@
         }
     }
 
-    // 주간 일정 캘린더 드로잉
     function renderWeekCalendar() {
         const container = document.getElementById('weekDaysContainer');
         container.innerHTML = '';
@@ -370,7 +364,7 @@
         displayPlants();
     }
 
-    // 🌟 핵심 교정 파트: 모드별 HTML 생성을 엄격하게 완전히 분리 처리
+    // 🌟 버그 완벽 치료: 모드별로 완전히 분리된 독립된 자식 요소를 생성하여 부모에 결합
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -426,7 +420,7 @@
             const card = document.createElement('div');
             card.className = 'plant-card';
             
-            // 🌟 모드 분기 시 잘못된 버튼 코드가 상단으로 튀어 올라가는 DOM 간섭현상 원천 차단
+            // 🌟 [핵심 수정] 이 내부에서 전적으로 태그 구조를 격리해 유령 버튼 생성을 원천 봉쇄합니다.
             if(viewMode === 'list') {
                 card.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
@@ -586,7 +580,7 @@
     }
     
     function openModal() { document.getElementById('plantModal').style.display = 'flex'; document.getElementById('deleteBtnForm').style.display = 'none'; initFormDates(); }
-    function closeModal() { document.getElementById('plantModal').style.display = 'none'; resetFormState(); clearInputs(); }
+    function closeModal() { document.getElementById('plantModal').style.none; document.getElementById('plantModal').style.display = 'none'; resetFormState(); clearInputs(); }
     
     function initFormDates() {
         const today = new Date().toISOString().split('T')[0];
