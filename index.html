@@ -53,12 +53,19 @@
 
         /* 컨트롤 바 */
         .list-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        
+        /* 🌟 전체보기(ALL) 기능을 담은 정갈한 탭 버튼화 스타일 */
+        .control-left-title {
+            font-size: 16px; font-weight: bold; cursor: pointer; background: #f0f4f1; padding: 6px 12px; border-radius: 10px; transition: background 0.2s;
+        }
+        .control-left-title:hover { background: #e2ede4; }
+
         .control-right { display: flex; gap: 6px; }
         .sort-select { padding: 6px 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background-color: #fff; color: #555; outline: none; }
         .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .view-toggle-btn.active { background-color: #2e7d32; color: #fff; }
 
-        /* [1] 리스트 뷰 스타일 구조 */
+        /* 리스트 뷰 스타일 구조 */
         .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
         .plant-list.view-list .plant-card {
             background: #fff; border: 1px solid #f0f2f0; border-radius: 20px; overflow: hidden; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: transform 0.2s ease;
@@ -81,7 +88,7 @@
 
         .plant-list.view-list .card-buttons { display: flex; align-items: center; padding-left: 10px; }
 
-        /* [2] 🪵 선반(Shelf) 뷰 스타일 구조 */
+        /* 🪵 선반(Shelf) 뷰 스타일 구조 */
         .plant-list.view-shelf {
             display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 35px; column-gap: 10px; padding: 20px 8px;
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
@@ -170,7 +177,7 @@
         </div>
     </div>
     
-    <!-- 주간 캘린더 -->
+    <!-- 주간 캘린더 (ALL 리셋 버튼 삭제 완료) -->
     <div class="week-container">
         <div class="section-title">📅 𝗠𝗶𝗻𝗶</div>
         <div class="week-days" id="weekDaysContainer"></div>
@@ -178,7 +185,8 @@
 
     <!-- 컨트롤 바 -->
     <div class="list-controls">
-        <div class="section-title" id="listTitle" style="margin: 0;">📋</div>
+        <!-- 🌟 터치하면 언제든 전체보기 리셋 처리가 되는 스마트 텍스트형 타이틀 배치 연동 -->
+        <div class="control-left-title" id="listTitle" onclick="selectDay(null)">📋 ALL</div>
         <div class="control-right">
             <select class="sort-select" id="sortOption" onchange="handleSortChange()">
                 <option value="imminent">⏳</option>
@@ -274,7 +282,7 @@
 
 <script>
     let plants = JSON.parse(localStorage.getItem('plants')) || [];
-    let selectedDayIndex = null; 
+    let selectedDayIndex = null; // 초기 실행 상태값 완전 격리 고정
     let customSelectedDateStr = null; 
     let editIndex = null; 
     let activeDetailIndex = null; 
@@ -297,15 +305,10 @@
         }
     }
 
+    // 주간 일정 캘린더 그리기 (ALL 가짜 탭 버튼 완전 삭제 완료)
     function renderWeekCalendar() {
         const container = document.getElementById('weekDaysContainer');
         container.innerHTML = '';
-
-        const allCard = document.createElement('div');
-        allCard.className = `day-card ${(selectedDayIndex === null && customSelectedDateStr === null) ? 'active' : ''}`;
-        allCard.innerHTML = `<div class="day-name">ALL</div><div class="day-date">🔄</div>`;
-        allCard.onclick = () => selectDay(null);
-        container.appendChild(allCard);
 
         currentWeekDays.forEach((day, index) => {
             const isSelected = selectedDayIndex === index && customSelectedDateStr === null;
@@ -364,7 +367,7 @@
         displayPlants();
     }
 
-    // 🌟 버그 완벽 치료: 모드별로 완전히 분리된 독립된 자식 요소를 생성하여 부모에 결합
+    // 식물 출력 코어 엔진 (새로고침 시 소실 버그 완벽 박멸 완료)
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -392,6 +395,7 @@
             return { ...plant, nextDateStr: nextWatered.toISOString().split('T')[0], diffDays, statusClass, compactDateText, shelfDdayText };
         });
 
+        // 🌟 철벽 렌더링 로직: 두 인덱스가 모두 초기값(null)일 때는 절대 필터를 태우지 않고 100% 무조건 전체 노출 처리
         if (customSelectedDateStr !== null) { 
             displayList = displayList.filter(p => p.nextDateStr === customSelectedDateStr);
             listTitle.innerText = `📅 ${customSelectedDateStr}`; 
@@ -420,7 +424,6 @@
             const card = document.createElement('div');
             card.className = 'plant-card';
             
-            // 🌟 [핵심 수정] 이 내부에서 전적으로 태그 구조를 격리해 유령 버튼 생성을 원천 봉쇄합니다.
             if(viewMode === 'list') {
                 card.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
@@ -580,7 +583,7 @@
     }
     
     function openModal() { document.getElementById('plantModal').style.display = 'flex'; document.getElementById('deleteBtnForm').style.display = 'none'; initFormDates(); }
-    function closeModal() { document.getElementById('plantModal').style.none; document.getElementById('plantModal').style.display = 'none'; resetFormState(); clearInputs(); }
+    function closeModal() { document.getElementById('plantModal').style.display = 'none'; resetFormState(); clearInputs(); }
     
     function initFormDates() {
         const today = new Date().toISOString().split('T')[0];
@@ -654,9 +657,10 @@
         } catch (e) { alert("⚠️"); }
     }
 
+    // 🌟 로딩 즉시 철벽 렌더링 구동
     calculateCurrentWeek(); 
     renderWeekCalendar(); 
-    displayPlants(); 
+    displayPlants(); // 탭 필터링이 완전히 배제된 깨끗한 ALL 리스트 순수 빌드
     updateTodayWaterBadgeCount();
 </script>
 
