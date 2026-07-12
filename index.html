@@ -13,7 +13,7 @@
             justify-content: center;
             padding: 20px;
             margin: 0;
-            padding-bottom: 90px;
+            padding-bottom: 110px; /* 플로팅 바가 카드를 가리지 않도록 바닥 여백을 조금 더 확보 */
         }
         .container {
             width: 100%;
@@ -146,26 +146,47 @@
             color: #fff;
         }
 
+        /* 공통 식물 카드 규격 */
+        .plant-card {
+            box-sizing: border-box;
+            position: relative;
+        }
+
         /* 리스트 뷰 스타일 */
         .plant-list.view-list { display: block; }
         .plant-list.view-list .plant-card {
-            background: #fff; border: 1px solid #ebeeec; margin-bottom: 16px; border-radius: 16px; overflow: hidden; display: flex; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+            background: #fff; border: 1px solid #ebeeec; margin-bottom: 16px; border-radius: 16px; overflow: hidden; display: flex; box-shadow: 0 4px 10px rgba(0,0,0,0.01);
         }
         .plant-list.view-list .plant-img { width: 110px; height: 160px; object-fit: cover; }
-        .plant-list.view-list .plant-info { padding: 12px 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .plant-list.view-list .plant-info { padding: 12px 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
         .plant-list.view-list .plant-info h3 { margin: 0; font-size: 16px; color: #1b5e20; display: flex; justify-content: space-between; }
         .plant-list.view-list .card-buttons { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
 
         /* 선반(Shelf) 뷰 스타일 */
         .plant-list.view-shelf {
-            display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 35px; column-gap: 12px; padding: 20px 5px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            row-gap: 35px;
+            column-gap: 10px;
+            padding: 20px 8px;
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
-            background-size: 100% 180px; border-radius: 12px;
+            background-size: 100% 180px;
+            border-radius: 12px;
+            box-sizing: border-box;
         }
-        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); position: relative; display: flex; flex-direction: column; overflow: visible; height: 135px; }
+        .plant-list.view-shelf .plant-card {
+            background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; overflow: visible; height: 135px; width: 100%;
+        }
         .plant-list.view-shelf .plant-img { width: 100%; height: 90px; object-fit: cover; border-radius: 12px 12px 0 0; }
-        .plant-list.view-shelf .plant-info { padding: 6px; text-align: center; }
-        .plant-list.view-shelf .plant-info h3 { margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+        .plant-list.view-shelf .plant-info { padding: 6px 8px; text-align: center; box-sizing: border-box; overflow: hidden; width: 100%; }
+        
+        /* 선반식 뷰 전용 이름 흐림 효과 */
+        .plant-list.view-shelf .plant-info h3 {
+            margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; display: block; text-align: center;
+            -webkit-mask-image: linear-gradient(to right, black 75%, transparent 95%);
+            mask-image: linear-gradient(to right, black 75%, transparent 95%);
+        }
+        
         .plant-list.view-shelf .plant-info p, .plant-list.view-shelf .card-buttons { display: none; }
         .plant-list.view-shelf .shelf-dday { position: absolute; bottom: 50px; right: 4px; font-size: 10px; background: rgba(0,0,0,0.75); color: white; padding: 2px 6px; border-radius: 10px; font-weight: bold; z-index: 4; }
 
@@ -176,38 +197,48 @@
         .plant-list.view-list .shelf-dday, .plant-list.view-list .shelf-action-trigger { display: none; }
         .plant-list.view-shelf .shelf-action-trigger { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
 
-        /* 물주기 전용 버튼 스타일 */
-        .quick-water-btn {
+        /* 버튼 스타일 */
+        .quick-water-btn { background-color: #0288d1; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .quick-water-btn:hover { background-color: #01579b; }
+        .edit-btn { background: #fff; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #f57c00; border-color: #f57c00; }
+
+        /* 🌟 하단 일괄 플로팅 바 - 스크롤 상관없이 스마트폰 최하단에 항상 팝업 고정 */
+        .floating-action-bar { 
+            display: none; 
+            position: fixed; /* 브라우저 뷰포트 화면 전체 기준으로 절대 고정 */
+            bottom: 24px; /* 바닥 레이어에서 살짝 띄워 모던한 느낌 연출 */
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            max-width: 440px; /* 전체 컨테이너와 너비 대칭 구성 */
             background-color: #0288d1;
             color: white;
-            border: none;
-            padding: 5px 10px;
-            font-size: 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
+            padding: 15px 20px;
+            border-radius: 16px;
+            box-shadow: 0 8px 24px rgba(2,136,209,0.3);
+            z-index: 9999; /* 다른 모달이나 식물 카드 위로 무조건 띄우는 최상위 레이어 설정 */
+            justify-content: space-between;
+            align-items: center;
+            box-sizing: border-box;
+            animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 살짝 통통 튀며 올라오는 네이티브 앱 연출 효과 */
         }
-        .quick-water-btn:hover { background-color: #01579b; }
-        
-        /* 메인 버튼 공통 */
-        .edit-btn {
-            background: #fff; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #f57c00; border-color: #f57c00;
+        @keyframes bounceUp {
+            from { transform: translate(-50%, 150%); opacity: 0; }
+            to { transform: translate(-50%, 0); opacity: 1; }
         }
-
-        /* 하단 일괄 플로팅 바 */
-        .floating-action-bar { display: none; position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 8px 24px rgba(2,136,209,0.3); z-index: 90; justify-content: space-between; align-items: center; }
         .selected-count { font-size: 14px; font-weight: bold; }
-        .bulk-water-btn { background: white; color: #0288d1; border: none; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
+        .bulk-water-btn { background: white; color: #0288d1; border: none; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; transition: background 0.2s; }
+        .bulk-water-btn:hover { background: #e1f5fe; }
 
-        /* 공통 모달 오버레이 구조 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 100; justify-content: center; align-items: flex-end; }
+        /* 모달 오버레이 구조 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10000; justify-content: center; align-items: flex-end; }
         .modal-content { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 20px; }
         .modal-title { font-size: 18px; font-weight: bold; color: #1b5e20; }
         .close-modal-btn { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; }
 
-        /* 월간 달력 내부 캘린더 디자인 */
+        /* 달력 구조 */
         .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-nav button { background: #e8f5e9; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; color: #2e7d32; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
@@ -218,22 +249,13 @@
         .calendar-day-cell .water-mark { font-size: 9px; background: #e1f5fe; color: #0288d1; border-radius: 4px; padding: 1px 2px; font-weight: bold; margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .calendar-day-cell.today-cell { background: #e8f5e9; font-weight: bold; border-color: #2e7d32; }
 
-        /* 등록 폼 스타일 */
+        /* 등록 폼 */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
         .form-group input, .form-group select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; }
-        
-        /* 폼 버튼 그룹 구조 변경 */
-        .form-action-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
+        .form-action-group { display: flex; gap: 10px; margin-top: 20px; }
         .btn-submit { flex: 2; padding: 14px; background-color: #2e7d32; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; }
-        /* 🌟 수정페이지 전용 위험 구역 삭제 버튼 추가 */
-        .btn-delete-hidden {
-            flex: 1; padding: 14px; background-color: #d32f2f; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; display: none;
-        }
+        .btn-delete-hidden { flex: 1; padding: 14px; background-color: #d32f2f; color: white; border: none; border-radius: 10px; font-size: 16px; cursor: pointer; font-weight: bold; display: none; }
     </style>
 </head>
 <body>
@@ -272,7 +294,7 @@
     <div class="plant-list view-list" id="plantList"></div>
 </div>
 
-<!-- 월간 달력 모달 레이어 -->
+<!-- 월간 달력 모달 -->
 <div class="modal-overlay" id="monthModal">
     <div class="modal-content" style="max-height: 90vh;">
         <div class="modal-header">
@@ -289,13 +311,13 @@
     </div>
 </div>
 
-<!-- 하단 일괄 플로팅 바 -->
+<!-- 🌟 하단 일괄 플로팅 바 (DOM 배치 최적화 및 CSS 고정 완료) -->
 <div class="floating-action-bar" id="floatingBar">
     <div class="selected-count" id="selectedCountText">🌿 0</div>
-    <button class="bulk-water-btn" onclick="executeBulkWatering()">💧</button>
+    <button class="bulk-water-btn" onclick="executeBulkWatering()">💧 완료</button>
 </div>
 
-<!-- 등록/수정 모달 (삭제 버튼이 동적으로 나타납니다) -->
+<!-- 등록/수정 모달 -->
 <div class="modal-overlay" id="plantModal">
     <div class="modal-content">
         <div class="modal-header">
@@ -336,7 +358,6 @@
             <input type="file" id="plantImage" accept="image/*">
         </div>
         
-        <!-- 하단 액션 통합 레이아웃 변경 -->
         <div class="form-action-group">
             <button id="submitBtn" class="btn-submit" onclick="handleSubmit()">등록 완료</button>
             <button id="deleteBtnForm" class="btn-delete-hidden" onclick="executeDeleteFromForm()">삭제</button>
@@ -354,7 +375,6 @@
     let viewMode = 'list'; 
     let calendarDate = new Date(); 
 
-    // 주간 날짜 계산
     function calculateCurrentWeek() {
         currentWeekDays = [];
         const today = new Date();
@@ -375,7 +395,6 @@
         }
     }
 
-    // 주간 캘린더 그리기
     function renderWeekCalendar() {
         const container = document.getElementById('weekDaysContainer');
         container.innerHTML = '';
@@ -435,7 +454,6 @@
         displayPlants();
     }
 
-    // 메인 리시트 표시 (식물 내부 정보 ✕ 삭제 기호 완전 삭제 완료)
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -494,12 +512,11 @@
             card.className = 'plant-card';
             card.innerHTML = `
                 <div class="checkbox-container"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
-                <!-- 선반형 기어 클릭 시 수정 페이지로만 리다이렉트 -->
                 <button class="shelf-action-trigger" onclick="startEdit(${originalIndex})">⚙️</button>
                 <div class="shelf-dday">${shelfDdayText}</div>
                 <img src="${imageSrc}" class="plant-img" alt="${plant.name}">
                 <div class="plant-info">
-                    <h3>${plant.name} <span class="location-badge">📍 ${plant.location}</span></h3>
+                    <h3>${plant.name}</h3>
                     <p style="color: #2e7d32; font-weight: bold; margin: 2px 0;">💚 +${plant.dPlusDays}</p>
                     <p>🔔 ${plant.nextDateStr} ${dDayStr}</p>
                     <p>🪴 ${repotStr}</p>
@@ -522,7 +539,6 @@
         saveAndRender();
     }
 
-    // 월간 달력 엔진
     function buildMonthlyCalendar() {
         const gridBody = document.getElementById('calendarGridBody');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -586,22 +602,31 @@
         else { checkedIndices = checkedIndices.filter(i => i !== index); }
         updateFloatingBar();
     }
+    
+    // 🌟 플로팅 바 트리거 갱신
     function updateFloatingBar() {
         const bar = document.getElementById('floatingBar');
         const text = document.getElementById('selectedCountText');
-        if (checkedIndices.length > 0) { text.innerText = `🌿 ${checkedIndices.length}`; bar.style.display = 'flex'; } 
-        else { bar.style.display = 'none'; }
+        if (checkedIndices.length > 0) { 
+            text.innerText = `🌿 x ${checkedIndices.length}`; 
+            bar.style.display = 'flex'; 
+        } else { 
+            bar.style.display = 'none'; 
+        }
     }
+
     function executeBulkWatering() {
         if (checkedIndices.length === 0) return;
         const now = new Date(); now.setHours(12, 0, 0, 0);
         checkedIndices.forEach(index => { plants[index].lastDate = now.toISOString(); });
-        checkedIndices = []; updateFloatingBar(); saveAndRender();
+        checkedIndices = []; 
+        updateFloatingBar(); 
+        saveAndRender();
     }
     
     function openModal() { 
         document.getElementById('plantModal').style.display = 'flex'; 
-        document.getElementById('deleteBtnForm').style.display = 'none'; // 등록 모드일 땐 삭제 버튼 완전히 숨김
+        document.getElementById('deleteBtnForm').style.display = 'none'; 
         initFormDates(); 
     }
     
@@ -643,7 +668,6 @@
         saveAndRender(); closeModal();
     }
 
-    // 🌟 수정 모드 진입 (여기서만 빨간 삭제 버튼이 노출되도록 제어)
     function startEdit(index) {
         editIndex = index; const plant = plants[index];
         document.getElementById('plantName').value = plant.name; document.getElementById('plantLocation').value = plant.location;
@@ -655,20 +679,18 @@
         document.getElementById('modalTitle').innerText = `식물 수정: ${plant.name}`; 
         document.getElementById('submitBtn').innerText = "수정 완료";
         
-        // 🌟 수정 페이지에서만 안전하게 삭제 가능하도록 버튼 등장 시킴
         document.getElementById('deleteBtnForm').style.display = 'block';
         document.getElementById('plantModal').style.display = 'flex';
     }
     
-    // 🌟 수정창 내부에서 직접 호출하는 물리 삭제 기능
     function executeDeleteFromForm() {
         if(editIndex !== null) {
-            if(confirm(`정말 [${plants[editIndex].name}] 식물을 삭제하시겠습니까?\n삭제된 데이터는 복구할 수 없습니다.`)) {
+            if(confirm(`정말 [${plants[editIndex].name}] 식물을 삭제하시겠습니까?`)) {
                 checkedIndices = checkedIndices.filter(i => i !== editIndex);
                 updateFloatingBar();
                 plants.splice(editIndex, 1);
                 saveAndRender();
-                closeModal(); // 지우고 나서 모달창까지 깨끗하게 서랍 닫기
+                closeModal();
             }
         }
     }
@@ -676,7 +698,7 @@
     function resetFormState() { 
         document.getElementById('modalTitle').innerText = "새 식물 등록하기"; 
         document.getElementById('submitBtn').innerText = "등록 완료"; 
-        document.getElementById('deleteBtnForm').style.display = 'none'; // 초기화
+        document.getElementById('deleteBtnForm').style.display = 'none'; 
         editIndex = null; 
     }
     function clearInputs() { document.getElementById('plantName').value = ''; document.getElementById('waterCycle').value = ''; document.getElementById('plantImage').value = ''; }
