@@ -6,9 +6,9 @@
     <title>반려식물 매니저 Premium</title>
     <style>
         body {
-            font-family: 'Malgun Gothic', sans-serif;
-            background-color: #f7faf8;
-            color: #333;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f6f9f6;
+            color: #2c3e50;
             display: flex;
             justify-content: center;
             padding: 20px;
@@ -19,11 +19,11 @@
             width: 100%;
             max-width: 480px;
             background: white;
-            padding: 25px;
-            border-radius: 24px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.04);
+            padding: 24px;
+            border-radius: 28px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.03);
             position: relative;
-            min-height: 80vh;
+            min-height: 85vh;
             box-sizing: border-box;
         }
         
@@ -42,9 +42,9 @@
 
         /* 주간 스케줄러 */
         .week-container { margin-bottom: 20px; }
-        .week-days { display: flex; justify-content: space-between; background: #f1f5f2; padding: 8px; border-radius: 16px; gap: 4px; }
-        .day-card { flex: 1; text-align: center; padding: 10px 4px; border-radius: 12px; cursor: pointer; }
-        .day-name { font-size: 11px; color: #666; margin-bottom: 4px; font-weight: bold; }
+        .week-days { display: flex; justify-content: space-between; background: #f0f4f1; padding: 6px; border-radius: 18px; gap: 4px; }
+        .day-card { flex: 1; text-align: center; padding: 10px 4px; border-radius: 14px; cursor: pointer; transition: all 0.2s ease; }
+        .day-name { font-size: 11px; color: #7f8c8d; margin-bottom: 4px; font-weight: bold; }
         .day-date { font-size: 15px; font-weight: bold; }
         .day-card.active { background-color: #2e7d32; color: white; }
         .day-card.active .day-name { color: #e8f5e9; }
@@ -52,80 +52,82 @@
         .day-card.active.has-plant::after { color: white; }
 
         /* 컨트롤 바 */
-        .list-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .list-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .control-right { display: flex; gap: 6px; }
-        .sort-select { padding: 6px 8px; border: 1px solid #ccc; border-radius: 8px; font-size: 13px; background-color: #fff; color: #555; }
-        .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 8px; font-size: 13px; font-weight: bold; }
+        .sort-select { padding: 6px 10px; border: 1px solid #e0e0e0; border-radius: 10px; font-size: 13px; background-color: #fff; color: #555; outline: none; }
+        .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .view-toggle-btn.active { background-color: #2e7d32; color: #fff; }
 
-        /* 공통 식물 카드 규격 */
-        .plant-card { box-sizing: border-box; position: relative; cursor: pointer; }
-
-        /* 리스트 뷰 스타일 */
-        .plant-list.view-list { display: block; }
+        /* 🌟 세련된 미니멀 식물 카드 레이아웃 아키텍처 */
+        .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
         .plant-list.view-list .plant-card {
-            background: #fff; border: 1px solid #ebeeec; margin-bottom: 16px; border-radius: 16px; overflow: hidden; display: flex; box-shadow: 0 4px 10px rgba(0,0,0,0.01);
+            background: #fff; border: 1px solid #f0f2f0; border-radius: 20px; overflow: hidden; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: transform 0.2s ease;
         }
-        .plant-list.view-list .plant-img { width: 110px; height: 140px; object-fit: cover; }
-        .plant-list.view-list .plant-info { padding: 12px 15px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; overflow: hidden; }
-        .plant-list.view-list .plant-info h3 { margin: 0; font-size: 16px; color: #1b5e20; display: flex; justify-content: space-between; }
-        .plant-list.view-list .card-buttons { display: flex; gap: 6px; margin-top: 6px; justify-content: flex-end; }
+        .plant-list.view-list .plant-card:hover { transform: translateY(-2px); }
+        .plant-list.view-list .plant-img { width: 68px; height: 68px; object-fit: cover; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+        
+        .plant-list.view-list .plant-info { 
+            padding-left: 16px; flex: 1; display: flex; align-items: center; justify-content: space-between; overflow: hidden; 
+        }
+        .plant-list.view-list .card-text-zone { display: flex; flex-direction: column; gap: 6px; }
+        .plant-list.view-list .plant-info h3 { margin: 0; font-size: 16px; font-weight: 600; color: #2c3e50; }
+        
+        /* 모던 날짜 배지 칩 */
+        .compact-date-badge {
+            font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 8px; width: fit-content;
+        }
+        .compact-date-badge.normal { background-color: #f0f7f4; color: #2e7d32; }
+        .compact-date-badge.urgent { background-color: #ffeef0; color: #d32f2f; }
+        .compact-date-badge.today { background-color: #e1f5fe; color: #0288d1; }
 
-        /* 선반(Shelf) 뷰 스타일 */
+        .plant-list.view-list .card-buttons { display: flex; align-items: center; padding-left: 10px; }
+
+        /* 선반(Shelf) 뷰 스타일 유지 */
         .plant-list.view-shelf {
             display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 35px; column-gap: 10px; padding: 20px 8px;
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
             background-size: 100% 180px; border-radius: 12px; box-sizing: border-box;
         }
-        .plant-list.view-shelf .plant-card {
-            background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%;
-        }
+        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; }
         .plant-list.view-shelf .plant-img { width: 100%; height: 90px; object-fit: cover; border-radius: 12px 12px 0 0; }
         .plant-list.view-shelf .plant-info { padding: 6px 8px; text-align: center; box-sizing: border-box; overflow: hidden; width: 100%; }
-        .plant-list.view-shelf .plant-info h3 {
-            margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; display: block; text-align: center; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 95%); mask-image: linear-gradient(to right, black 75%, transparent 95%);
-        }
-        .plant-list.view-shelf .plant-info p, .plant-list.view-shelf .card-buttons { display: none; }
+        .plant-list.view-shelf .plant-info h3 { margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; display: block; text-align: center; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 95%); mask-image: linear-gradient(to right, black 75%, transparent 95%); }
+        .plant-list.view-shelf .card-text-zone p, .plant-list.view-shelf .card-buttons { display: none; }
         .plant-list.view-shelf .shelf-dday { position: absolute; bottom: 50px; right: 4px; font-size: 10px; background: rgba(0,0,0,0.75); color: white; padding: 2px 6px; border-radius: 10px; font-weight: bold; z-index: 4; }
 
         /* 체크박스 및 기어 단추 공통 */
-        .checkbox-container { position: absolute; top: 8px; left: 8px; z-index: 5; background: rgba(255, 255, 255, 0.9); padding: 4px; border-radius: 6px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .plant-checkbox { width: 16px; height: 16px; cursor: pointer; margin: 0; }
-        .location-badge { font-size: 11px; background-color: #e8f5e9; color: #2e7d32; padding: 2px 6px; border-radius: 8px; font-weight: normal; }
+        .checkbox-container { position: absolute; top: 6px; left: 6px; z-index: 5; background: rgba(255, 255, 255, 0.9); padding: 4px; border-radius: 6px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        .plant-checkbox { width: 15px; height: 16px; cursor: pointer; margin: 0; }
         .plant-list.view-list .shelf-dday, .plant-list.view-list .shelf-action-trigger { display: none; }
         .plant-list.view-shelf .shelf-action-trigger { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
 
-        /* 버튼 양식 */
-        .quick-water-btn { background-color: #0288d1; color: white; border: none; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .edit-btn { background: #fff; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #f57c00; border-color: #f57c00; }
+        /* 미니멀 원형 물주기 단추 */
+        .quick-water-btn { background-color: #0288d1; color: white; border: none; width: 44px; height: 44px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(2,136,209,0.15); transition: background 0.2s; }
+        .quick-water-btn:hover { background-color: #01579b; }
 
         /* 하단 일괄 플로팅 바 */
-        .floating-action-bar { 
-            display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; z-index: 9999; justify-content: space-between; align-items: center; box-sizing: border-box; animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .floating-action-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; z-index: 9999; justify-content: space-between; align-items: center; box-sizing: border-box; animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         @keyframes bounceUp { from { transform: translate(-50%, 150%); opacity: 0; } to { transform: translate(-50%, 0); opacity: 1; } }
         .selected-count { font-size: 14px; font-weight: bold; }
         .bulk-water-btn { background: white; color: #0288d1; border: none; padding: 8px 16px; border-radius: 10px; font-size: 14px; font-weight: bold; cursor: pointer; }
 
-        /* 공통 모달 팝업 기초 */
+        /* 모달 시스템 */
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); z-index: 10000; justify-content: center; align-items: flex-end; }
-        .modal-content { width: 100%; max-width: 480px; background: white; border-radius: 24px 24px 0 0; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
+        .modal-content { width: 100%; max-width: 480px; background: white; border-radius: 28px 28px 0 0; padding: 25px; box-sizing: border-box; max-height: 85vh; overflow-y: auto; animation: slideUp 0.3s ease-out; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 12px; margin-bottom: 20px; }
-        .close-modal-btn { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f0f0f0; padding-bottom: 12px; margin-bottom: 20px; }
+        .close-modal-btn { background: none; border: none; font-size: 20px; color: #888; cursor: pointer; padding: 4px; }
 
-        /* 달력 그리드 */
+        /* 달력 */
         .calendar-nav { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .calendar-nav button { background: #e8f5e9; border: none; padding: 6px 12px; border-radius: 8px; color: #2e7d32; font-weight: bold; }
         .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
         .calendar-header-cell { font-size: 12px; font-weight: bold; color: #777; padding: 5px 0; }
         .calendar-day-cell { min-height: 52px; background: #fafafa; border-radius: 8px; padding: 4px; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; justify-content: space-between; box-sizing: border-box; }
-        .calendar-day-cell:hover { background: #f0f4f1; }
-        .calendar-day-cell.empty { background: transparent; cursor: default; pointer-events: none; }
-        .calendar-day-cell .water-mark { font-size: 9px; background: #e1f5fe; color: #0288d1; border-radius: 4px; padding: 1px 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
         .calendar-day-cell.today-cell { background: #e8f5e9; font-weight: bold; border: 1px solid #2e7d32; }
+        .calendar-day-cell .water-mark { font-size: 9px; background: #e1f5fe; color: #0288d1; border-radius: 4px; padding: 1px 2px; font-weight: bold; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; }
 
-        /* 등록 서랍 구조 */
+        /* 등록 폼 */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
         .form-group input, .form-group select { width: 100%; padding: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 10px; font-size: 14px; }
@@ -133,7 +135,9 @@
         .btn-submit { flex: 2; padding: 14px; background-color: #2e7d32; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; }
         .btn-delete-hidden { flex: 1; padding: 14px; background-color: #d32f2f; color: white; border: none; border-radius: 10px; font-size: 16px; font-weight: bold; cursor: pointer; display: none; }
 
-        /* 🌟 새로 추가된 식물 성장기 상세 모달 내부 스타일 디자인 */
+        /* 🌟 상세창 구조 변경: 우측 상단 수정 배치용 디자인 헤더 조율 */
+        .detail-header-right { display: flex; align-items: center; gap: 12px; }
+        .detail-edit-trigger-btn { background: none; border: 1px solid #f57c00; color: #f57c00; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .detail-meta-box { background: #f9fbf9; border-radius: 14px; padding: 15px; margin-bottom: 20px; font-size: 14px; border: 1px solid #edf2ed; }
         .detail-meta-box p { margin: 6px 0; display: flex; justify-content: space-between; }
         .detail-meta-label { color: #666; font-weight: bold; }
@@ -141,7 +145,6 @@
         .album-section-title { font-size: 15px; font-weight: bold; color: #1b5e20; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; }
         .add-album-log-btn { background: #e8f5e9; color: #2e7d32; border: none; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
         
-        /* 타임라인 피드 배열 */
         .album-timeline { display: flex; flex-direction: column; gap: 14px; margin-top: 10px; }
         .album-card { background: #fff; border: 1px solid #eaeaea; border-radius: 12px; overflow: hidden; display: flex; gap: 10px; padding: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.02); }
         .album-card-img { width: 75px; height: 75px; object-fit: cover; border-radius: 8px; background: #eee; }
@@ -187,7 +190,7 @@
     <div class="plant-list view-list" id="plantList"></div>
 </div>
 
-<!-- 월간 달력 모달 (X표시 버그 수정 완료) -->
+<!-- 월간 달력 모달 -->
 <div class="modal-overlay" id="monthModal">
     <div class="modal-content" style="max-height: 90vh;">
         <div class="modal-header">
@@ -204,15 +207,18 @@
     </div>
 </div>
 
-<!-- 🌟 신규 모달: 식물 상세 정보 및 성장 타임라인 앨범 페이지 -->
+<!-- 🌟 상세 모달: 수정을 내부 헤더단으로 정상 유도하도록 UI 결합 조정 -->
 <div class="modal-overlay" id="plantDetailModal">
     <div class="modal-content" style="max-height: 85vh;">
         <div class="modal-header">
-            <div class="modal-title" id="detailModalTitle">식물 상세 정보</div>
-            <button class="close-modal-btn" onclick="closeDetailModal()">✕</button>
+            <div class="modal-title" id="detailModalTitle">-</div>
+            <div class="detail-header-right">
+                <!-- 🌟 추가됨: 이제 메인에 없던 ✏️수정 기능을 상세창 우측 상단에서 구동합니다 -->
+                <button class="detail-edit-trigger-btn" onclick="transferToEditFromDetail()">✏️ 수정</button>
+                <button class="close-modal-btn" onclick="closeDetailModal()">✕</button>
+            </div>
         </div>
         
-        <!-- 프로필 요약 카드 정보 -->
         <div class="detail-meta-box">
             <p><span class="detail-meta-label">📍 배치 위치</span> <span id="metaLocation">-</span></p>
             <p><span class="detail-meta-label">💚 함께한 기간</span> <span id="metaElapsed">-</span></p>
@@ -220,18 +226,13 @@
             <p><span class="detail-meta-label">🪴 분갈이 이력</span> <span id="metaRepot">-</span></p>
         </div>
 
-        <!-- 사진 앨범 피드 타임라인 -->
         <div class="album-section-title">
             <span>📸 식물 성장 앨범</span>
             <button class="add-album-log-btn" onclick="triggerAddAlbumLog()">+ 기록 추가</button>
         </div>
         
-        <!-- 히든 파일 업로더 매크로 -->
         <input type="file" id="albumFileAgent" accept="image/*" style="display: none;" onchange="handleAlbumFileSelected()">
-
-        <div class="album-timeline" id="detailAlbumContainer">
-            <!-- 자바스크립트로 누적 타임라인 출력 -->
-        </div>
+        <div class="album-timeline" id="detailAlbumContainer"></div>
     </div>
 </div>
 
@@ -273,9 +274,7 @@
     let selectedDayIndex = null; 
     let customSelectedDateStr = null; 
     let editIndex = null; 
-    let activeDetailIndex = null; // 현재 상세 히스토리 창을 열어본 식물의 인덱스
-    let currentWeekDays = []; 
-    let checkedIndices = []; 
+    let activeDetailIndex = null; 
     let viewMode = 'list'; 
     let calendarDate = new Date(); 
 
@@ -291,11 +290,7 @@
         for (let i = 0; i < 7; i++) {
             const nextDay = new Date(monday);
             nextDay.setDate(monday.getDate() + i);
-            currentWeekDays.push({
-                name: dayNames[i],
-                dateStr: nextDay.toISOString().split('T')[0],
-                dayNum: nextDay.getDate()
-            });
+            currentWeekDays.push({ name: dayNames[i], dateStr: nextDay.toISOString().split('T')[0], dayNum: nextDay.getDate() });
         }
     }
 
@@ -315,10 +310,7 @@
 
             const dayCard = document.createElement('div');
             dayCard.className = `day-card ${isSelected ? 'active' : ''} ${hasPlant ? 'has-plant' : ''}`;
-            dayCard.innerHTML = `
-                <div class="day-name">${day.name}</div>
-                <div class="day-date">${day.dayNum}</div>
-            `;
+            dayCard.innerHTML = `<div class="day-name">${day.name}</div><div class="day-date">${day.dayNum}</div>`;
             dayCard.onclick = () => selectDay(index);
             container.appendChild(dayCard);
         });
@@ -349,12 +341,8 @@
     }
 
     function selectDay(index) {
-        selectedDayIndex = index;
-        customSelectedDateStr = null; 
-        checkedIndices = [];
-        updateFloatingBar();
-        renderWeekCalendar();
-        displayPlants();
+        selectedDayIndex = index; customSelectedDateStr = null; checkedIndices = [];
+        updateFloatingBar(); renderWeekCalendar(); displayPlants();
     }
 
     function handleSortChange() { displayPlants(); }
@@ -366,16 +354,14 @@
         const listContainer = document.getElementById('plantList');
 
         if(mode === 'list') {
-            btnList.classList.add('active'); btnShelf.classList.remove('active');
-            listContainer.className = "plant-list view-list";
+            btnList.classList.add('active'); btnShelf.classList.remove('active'); listContainer.className = "plant-list view-list";
         } else {
-            btnList.classList.remove('active'); btnShelf.classList.add('active');
-            listContainer.className = "plant-list view-shelf";
+            btnList.classList.remove('active'); btnShelf.classList.add('active'); listContainer.className = "plant-list view-shelf";
         }
         displayPlants();
     }
 
-    // 메인 리스트 렌더링 - 날짜 서식 7/18(D-6)로 파싱 압축 완료
+    // 🌟 메인 대시보드 렌더링 - 글자 전면 생략 및 시인성 극대화 슬림 레이아웃 매핑
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -390,29 +376,22 @@
             const today = new Date(); today.setHours(0,0,0,0); nextWatered.setHours(0,0,0,0);
             const diffDays = Math.ceil((nextWatered - today) / (1000 * 60 * 60 * 24));
 
-            let dPlusDays = 1;
-            if(plant.adoptDate) {
-                const adopt = new Date(plant.adoptDate);
-                adopt.setHours(0,0,0,0);
-                dPlusDays = Math.floor((today - adopt) / (1000 * 60 * 60 * 24)) + 1;
-            }
-
-            // 🌟 날짜 규격 7/18 구조 파싱 매크로 생성
             const mm = nextWatered.getMonth() + 1;
             const dd = nextWatered.getDate();
-            let dDayTag = diffDays === 0 ? '오늘' : (diffDays < 0 ? `+${Math.abs(diffDays)}지남` : `D-${diffDays}`);
+            
+            let statusClass = 'normal';
+            let dDayTag = `D-${diffDays}`;
+            if (diffDays === 0) { statusClass = 'today'; dDayTag = '오늘💧'; } 
+            else if (diffDays < 0) { statusClass = 'urgent'; dDayTag = `⚠️+${Math.abs(diffDays)}`; }
+            
             const compactDateText = `${mm}/${dd} (${dDayTag})`;
 
-            return { ...plant, nextDateStr: nextWatered.toISOString().split('T')[0], diffDays, dPlusDays, compactDateText };
+            return { ...plant, nextDateStr: nextWatered.toISOString().split('T')[0], diffDays, statusClass, compactDateText };
         });
 
-        if (customSelectedDateStr !== null) {
-            listTitle.innerText = `📅 ${customSelectedDateStr}`;
-        } else if (selectedDayIndex !== null) {
-            listTitle.innerText = `📅 ${currentWeekDays[selectedDayIndex].name}`;
-        } else {
-            listTitle.innerText = "📋 ALL";
-        }
+        if (customSelectedDateStr !== null) { listTitle.innerText = `📅 ${customSelectedDateStr}`; } 
+        else if (selectedDayIndex !== null) { listTitle.innerText = `📅 ${currentWeekDays[selectedDayIndex].name}`; } 
+        else { listTitle.innerText = "📋 ALL"; }
 
         if (sortOption === 'imminent') { displayList.sort((a, b) => a.diffDays - b.diffDays); } 
         else if (sortOption === 'location') { displayList.sort((a, b) => a.location.localeCompare(b.location)); } 
@@ -426,26 +405,25 @@
         displayList.forEach((plant) => {
             const originalIndex = plants.findIndex(p => p.name === plant.name && p.lastDate === plant.lastDate);
             const isChecked = checkedIndices.includes(originalIndex);
-
             const imageSrc = plant.image || 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=500&auto=format&fit=crop&q=60';
-            const repotStr = plant.repotDate ? plant.repotDate.split('T')[0] : '✕';
 
             const card = document.createElement('div');
             card.className = 'plant-card';
-            // 카드 바디를 누르면 상세페이지 오픈 (체크박스, 관리기어 제외)
+            
+            // 🌟 리스트뷰 카드 구성: 수정버튼 소거 및 가로 컴팩트 슬림 라인업 구축 완료
             card.innerHTML = `
                 <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
-                <button class="shelf-action-trigger" onclick="event.stopPropagation(); openShelfMenuOption(${originalIndex});">⚙️</button>
+                <button class="shelf-action-trigger" onclick="event.stopPropagation(); startEdit(${originalIndex});">⚙️</button>
                 <div class="shelf-dday" onclick="event.stopPropagation(); openPlantDetail(${originalIndex})">${plant.diffDays === 0 ? '💧' : (plant.diffDays < 0 ? '⚠️' : 'D-' + plant.diffDays)}</div>
+                
                 <img src="${imageSrc}" class="plant-img" onclick="openPlantDetail(${originalIndex})">
                 <div class="plant-info" onclick="openPlantDetail(${originalIndex})">
-                    <h3>${plant.name}</h3>
-                    <p style="color: #2e7d32; font-weight: bold; margin: 2px 0;">💚 +${plant.dPlusDays}</p>
-                    <p>🔔 ${plant.compactDateText}</p>
-                    <p>🪴 ${repotStr}</p>
+                    <div class="card-text-zone">
+                        <h3>${plant.name}</h3>
+                        <div class="compact-date-badge ${plant.statusClass}">${plant.compactDateText}</div>
+                    </div>
                     <div class="card-buttons" onclick="event.stopPropagation();">
-                        <button class="quick-water-btn" onclick="waterPlant(${originalIndex})">💧 완료</button>
-                        <button class="edit-btn" onclick="startEdit(${originalIndex})">✏️</button>
+                        <button class="quick-water-btn" onclick="waterPlant(${originalIndex})">💧</button>
                     </div>
                 </div>
             `;
@@ -453,12 +431,10 @@
         });
     }
 
-    // 🌟 상세 성장기 모달 팝업 가동 엔진
+    // 상세 정보 모달 활성화
     function openPlantDetail(index) {
         activeDetailIndex = index;
         const plant = plants[index];
-        
-        // 날짜 파싱
         const today = new Date(); today.setHours(0,0,0,0);
         let dPlus = 1;
         if(plant.adoptDate) {
@@ -476,31 +452,31 @@
         document.getElementById('plantDetailModal').style.display = 'flex';
     }
 
-    function closeDetailModal() {
-        document.getElementById('plantDetailModal').style.display = 'none';
-        activeDetailIndex = null;
+    function closeDetailModal() { document.getElementById('plantDetailModal').style.display = 'none'; activeDetailIndex = null; }
+
+    // 🌟 추가됨: 상세창 헤더에서 수정하기를 누를 경우, 상세 모달을 닫고 수정 폼을 다이렉트로 매핑 구동
+    function transferToEditFromDetail() {
+        if(activeDetailIndex !== null) {
+            const targetIndex = activeDetailIndex;
+            closeDetailModal(); // 상세창 닫고
+            startEdit(targetIndex); // 곧바로 수정 서랍 팝업 열기
+        }
     }
 
     // 타임라인 서브 앨범 렌더링
     function renderAlbumTimeline() {
-        const container = document.getElementById('detailAlbumContainer');
-        container.innerHTML = '';
+        const container = document.getElementById('detailAlbumContainer'); container.innerHTML = '';
         const plant = plants[activeDetailIndex];
-        
-        // 식물 객체 내 앨범 히스토리가 없으면 빈 배열로 강제 가공
         const logs = plant.albumLogs || [];
 
         if(logs.length === 0) {
-            container.innerHTML = '<p style="text-align:center; color:#bbb; font-size:12px; padding: 20px 0;">등록된 사진 기록이 없습니다.<br>우측 상단 버튼을 눌러 첫 순간을 기록해 보세요! 📸</p>';
+            container.innerHTML = '<p style="text-align:center; color:#bbb; font-size:12px; padding: 20px 0;">등록된 사진 기록이 없습니다.<br>기록 추가를 눌러 첫 순간을 보관해 보세요! 📸</p>';
             return;
         }
 
-        // 최신 날짜 로그가 위로 오도록 역순 배치
         const sortedLogs = [...logs].sort((a,b) => new Date(b.date) - new Date(a.date));
-
         sortedLogs.forEach(log => {
-            const aCard = document.createElement('div');
-            aCard.className = 'album-card';
+            const aCard = document.createElement('div'); aCard.className = 'album-card';
             aCard.innerHTML = `
                 <img src="${log.img}" class="album-card-img">
                 <div class="album-card-body">
@@ -512,94 +488,60 @@
         });
     }
 
-    function triggerAddAlbumLog() {
-        document.getElementById('albumFileAgent').click(); // 히든 에이전트 구동
-    }
+    function triggerAddAlbumLog() { document.getElementById('albumFileAgent').click(); }
 
     function handleAlbumFileSelected() {
-        const agent = document.getElementById('albumFileAgent');
-        const file = agent.files[0];
-        if(!file) return;
-
+        const agent = document.getElementById('albumFileAgent'); const file = agent.files[0]; if(!file) return;
         const note = prompt("📸 이 사진에 짧은 한 줄 성장기를 남겨주세요:");
-        
         const reader = new FileReader();
         reader.onloadend = function() {
             const todayStr = new Date().toISOString().split('T')[0];
-            const newLog = {
-                date: todayStr,
-                img: reader.result,
-                note: note || '쑥쑥 잘 자라는 중 🌱'
-            };
-
+            const newLog = { date: todayStr, img: reader.result, note: note || '쑥쑥 잘 자라는 중 🌱' };
             if(!plants[activeDetailIndex].albumLogs) plants[activeDetailIndex].albumLogs = [];
             plants[activeDetailIndex].albumLogs.push(newLog);
-
-            // 로컬스토리지 보존 연동
             localStorage.setItem('plants', JSON.stringify(plants));
-            renderAlbumTimeline();
-            displayPlants(); // 메인 이미지도 자동 싱크 동기화 목적
-            agent.value = ''; // 에이전트 리셋
+            renderAlbumTimeline(); displayPlants(); agent.value = '';
         }
         reader.readAsDataURL(file);
     }
-
-    function openShelfMenuOption(index) { startEdit(index); }
 
     function waterPlant(index) {
         const now = new Date(); now.setHours(12, 0, 0, 0);
         plants[index].lastDate = now.toISOString();
         checkedIndices = checkedIndices.filter(i => i !== index);
-        updateFloatingBar();
-        saveAndRender();
+        updateFloatingBar(); saveAndRender();
     }
 
     // 월간 달력 연동
     function buildMonthlyCalendar() {
-        const gridBody = document.getElementById('calendarGridBody');
-        const monthTitle = document.getElementById('calendarMonthTitle');
-        gridBody.innerHTML = '';
-
-        const year = calendarDate.getFullYear();
-        const month = calendarDate.getMonth();
+        const gridBody = document.getElementById('calendarGridBody'); const monthTitle = document.getElementById('calendarMonthTitle'); gridBody.innerHTML = '';
+        const year = calendarDate.getFullYear(); const month = calendarDate.getMonth();
         monthTitle.innerText = `${year}.${(month + 1).toString().padStart(2, '0')}`;
 
         const weeks = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'];
-        weeks.forEach(w => {
-            const hCell = document.createElement('div'); hCell.className = 'calendar-header-cell'; hCell.innerText = w; gridBody.appendChild(hCell);
-        });
+        weeks.forEach(w => { const hCell = document.createElement('div'); hCell.className = 'calendar-header-cell'; hCell.innerText = w; gridBody.appendChild(hCell); });
 
-        const firstDayIdx = new Date(year, month, 1).getDay();
-        const totalDays = new Date(year, month + 1, 0).getDate();
+        const firstDayIdx = new Date(year, month, 1).getDay(); const totalDays = new Date(year, month + 1, 0).getDate();
         const todayStr = new Date().toISOString().split('T')[0];
 
-        for(let i = 0; i < firstDayIdx; i++) {
-            const emptyCell = document.createElement('div'); emptyCell.className = 'calendar-day-cell empty'; gridBody.appendChild(emptyCell);
-        }
+        for(let i = 0; i < firstDayIdx; i++) { const emptyCell = document.createElement('div'); emptyCell.className = 'calendar-day-cell empty'; gridBody.appendChild(emptyCell); }
 
         for(let day = 1; day <= totalDays; day++) {
             const currentCellDateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
-            const dayCell = document.createElement('div');
-            dayCell.className = 'calendar-day-cell';
+            const dayCell = document.createElement('div'); dayCell.className = 'calendar-day-cell';
             if (currentCellDateStr === todayStr) dayCell.classList.add('today-cell');
             dayCell.innerHTML = `<span style="font-weight:600;">${day}</span>`;
 
             const dailyWateringPlants = plants.filter(plant => getNextWaterDateStr(plant) === currentCellDateStr);
-            dailyWateringPlants.forEach(plant => {
-                const mark = document.createElement('div'); mark.className = 'water-mark'; mark.innerText = `💧 ${plant.name}`; dayCell.appendChild(mark);
-            });
+            dailyWateringPlants.forEach(plant => { const mark = document.createElement('div'); mark.className = 'water-mark'; mark.innerText = `💧 ${plant.name}`; dayCell.appendChild(mark); });
 
-            dayCell.onclick = () => {
-                customSelectedDateStr = currentCellDateStr; selectedDayIndex = null; renderWeekCalendar(); displayPlants(); closeMonthModal();
-            };
+            dayCell.onclick = () => { customSelectedDateStr = currentCellDateStr; selectedDayIndex = null; renderWeekCalendar(); displayPlants(); closeMonthModal(); };
             gridBody.appendChild(dayCell);
         }
     }
 
     function moveMonth(dir) { calendarDate.setMonth(calendarDate.getMonth() + dir); buildMonthlyCalendar(); }
     function openMonthModal() { document.getElementById('monthModal').style.display = 'flex'; buildMonthlyCalendar(); }
-    
-    // 🌟 오타 수정 완료: 기존 .none 분기를 .style.display 패러다임으로 정상 매핑
     function closeMonthModal() { document.getElementById('monthModal').style.display = 'none'; }
 
     function toggleCheck(index, checkbox) {
@@ -610,8 +552,7 @@
     
     function updateFloatingBar() {
         const bar = document.getElementById('floatingBar'); const text = document.getElementById('selectedCountText');
-        if (checkedIndices.length > 0) { text.innerText = `🌿 x ${checkedIndices.length}`; bar.style.display = 'flex'; } 
-        else { bar.style.display = 'none'; }
+        if (checkedIndices.length > 0) { text.innerText = `🌿 x ${checkedIndices.length}`; bar.style.display = 'flex'; } else { bar.style.display = 'none'; }
     }
 
     function executeBulkWatering() {
@@ -634,8 +575,7 @@
     function handleSubmit() {
         const nameInput = document.getElementById('plantName'); const locationInput = document.getElementById('plantLocation');
         const cycleInput = document.getElementById('waterCycle'); const adoptInput = document.getElementById('adoptDate');
-        const dateInput = document.getElementById('lastWateredDate'); const repotInput = document.getElementById('repotDate'); 
-        const imageInput = document.getElementById('plantImage');
+        const dateInput = document.getElementById('lastWateredDate'); const repotInput = document.getElementById('repotDate'); const imageInput = document.getElementById('plantImage');
 
         if (!nameInput.value || !cycleInput.value) { alert('식물 이름과 물주기 주기를 입력해주세요!'); return; }
 
@@ -655,9 +595,7 @@
     }
 
     function executeSaveOrUpdate(name, location, cycle, adoptDate, lastDate, repotDate, imageData) {
-        // 기존 앨범로그 정보 깨짐 방지를 위한 유지 검증문 주입
         const existingLogs = (editIndex !== null) ? (plants[editIndex].albumLogs || []) : [];
-        
         const plantData = { name, location, cycle, adoptDate, lastDate, repotDate, image: imageData, albumLogs: existingLogs };
         if (editIndex === null) { plants.push(plantData); } else { plants[editIndex] = plantData; }
         saveAndRender(); closeModal();
@@ -671,18 +609,14 @@
         document.getElementById('lastWateredDate').value = plant.lastDate.split('T')[0];
         document.getElementById('repotDate').value = plant.repotDate ? plant.repotDate.split('T')[0] : '';
         
-        document.getElementById('modalTitle').innerText = `식물 수정: ${plant.name}`; 
-        document.getElementById('submitBtn').innerText = "수정 완료";
-        
-        document.getElementById('deleteBtnForm').style.display = 'block';
-        document.getElementById('plantModal').style.display = 'flex';
+        document.getElementById('modalTitle').innerText = `식물 수정: ${plant.name}`; document.getElementById('submitBtn').innerText = "수정 완료";
+        document.getElementById('deleteBtnForm').style.display = 'block'; document.getElementById('plantModal').style.display = 'flex';
     }
     
     function executeDeleteFromForm() {
         if(editIndex !== null) {
             if(confirm(`정말 [${plants[editIndex].name}] 식물을 삭제하시겠습니까?`)) {
-                checkedIndices = checkedIndices.filter(i => i !== editIndex);
-                updateFloatingBar(); plants.splice(editIndex, 1); saveAndRender(); closeModal();
+                checkedIndices = checkedIndices.filter(i => i !== editIndex); updateFloatingBar(); plants.splice(editIndex, 1); saveAndRender(); closeModal();
             }
         }
     }
@@ -700,13 +634,10 @@
         try {
             localStorage.setItem('plants', JSON.stringify(plants));
             renderWeekCalendar(); displayPlants(); updateTodayWaterBadgeCount();
-        } catch (e) { alert("⚠️ 용량이 초과되었습니다."); }
+        } catch (e) { alert("⚠️"); }
     }
 
-    calculateCurrentWeek();
-    renderWeekCalendar();
-    displayPlants();
-    updateTodayWaterBadgeCount();
+    calculateCurrentWeek(); renderWeekCalendar(); displayPlants(); updateTodayWaterBadgeCount();
 </script>
 
 </body>
