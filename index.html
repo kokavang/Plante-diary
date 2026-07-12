@@ -14,7 +14,6 @@
             padding: 20px;
             margin: 0;
             padding-bottom: 110px;
-            overflow-x: hidden;
         }
         .container {
             width: 100%;
@@ -59,56 +58,27 @@
         .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .view-toggle-btn.active { background-color: #2e7d32; color: #fff; }
 
-        /* 리스트뷰 구조 */
+        /* 리스트 뷰 스타일 */
         .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
-        
-        .swipe-rail {
-            position: relative;
-            background-color: #0288d1;
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .swipe-bg-text {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: white;
-            font-size: 14px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            opacity: 0;
-            z-index: 1;
-        }
-
         .plant-list.view-list .plant-card {
-            background: #fff;
-            border: 1px solid #f0f2f0;
-            border-radius: 20px;
-            display: flex;
-            align-items: center;
-            padding: 12px;
-            position: relative;
-            z-index: 2;
-            cursor: grab;
-            user-select: none;
-            touch-action: pan-y;
+            background: #fff; border: 1px solid #f0f2f0; border-radius: 20px; overflow: hidden; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: transform 0.2s ease;
         }
-        .plant-list.view-list .plant-card:active { cursor: grabbing; }
-        .plant-list.view-list .plant-img { width: 68px; height: 68px; object-fit: cover; border-radius: 14px; pointer-events: none; }
+        .plant-list.view-list .plant-card:hover { transform: translateY(-2px); }
+        .plant-list.view-list .plant-img { width: 68px; height: 68px; object-fit: cover; border-radius: 14px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
         
         .plant-list.view-list .plant-info { 
-            padding-left: 16px; flex: 1; display: flex; align-items: center; justify-content: space-between; overflow: hidden; pointer-events: none;
+            padding-left: 16px; flex: 1; display: flex; align-items: center; justify-content: space-between; overflow: hidden; 
         }
         .plant-list.view-list .card-text-zone { display: flex; flex-direction: column; gap: 6px; }
         .plant-list.view-list .plant-info h3 { margin: 0; font-size: 16px; font-weight: 600; color: #2c3e50; }
         
+        /* 모던 날짜 배지 칩 */
         .compact-date-badge { font-size: 12px; font-weight: bold; padding: 4px 10px; border-radius: 8px; width: fit-content; }
         .compact-date-badge.normal { background-color: #f0f7f4; color: #2e7d32; }
         .compact-date-badge.urgent { background-color: #ffeef0; color: #d32f2f; }
         .compact-date-badge.today { background-color: #e1f5fe; color: #0288d1; }
+
+        .plant-list.view-list .card-buttons { display: flex; align-items: center; padding-left: 10px; }
 
         /* 선반(Shelf) 뷰 스타일 */
         .plant-list.view-shelf {
@@ -116,11 +86,11 @@
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
             background-size: 100% 180px; border-radius: 12px; box-sizing: border-box;
         }
-        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; border: none; padding: 0; transform: none !important; }
+        .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; border: none; padding: 0; }
         .plant-list.view-shelf .plant-img { width: 100%; height: 90px; object-fit: cover; border-radius: 12px 12px 0 0; }
         .plant-list.view-shelf .plant-info { padding: 6px 8px; text-align: center; box-sizing: border-box; overflow: hidden; width: 100%; display: block; }
         .plant-list.view-shelf .plant-info h3 { margin: 0; font-size: 13px; color: #1b5e20; white-space: nowrap; overflow: hidden; display: block; text-align: center; -webkit-mask-image: linear-gradient(to right, black 75%, transparent 95%); mask-image: linear-gradient(to right, black 75%, transparent 95%); }
-        .plant-list.view-shelf .card-text-zone, .plant-list.view-shelf .swipe-bg-text { display: none; }
+        .plant-list.view-shelf .card-text-zone, .plant-list.view-shelf .card-buttons { display: none; }
         
         .plant-list.view-shelf .shelf-dday { 
             position: absolute; bottom: 50px; right: 6px; font-size: 10px; font-weight: bold; padding: 3px 6px; border-radius: 8px; z-index: 4; box-shadow: 0 2px 5px rgba(0,0,0,0.15); color: white;
@@ -134,6 +104,10 @@
         .plant-checkbox { width: 15px; height: 16px; cursor: pointer; margin: 0; }
         .plant-list.view-list .shelf-dday, .plant-list.view-list .shelf-action-trigger { display: none; }
         .plant-list.view-shelf .shelf-action-trigger { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
+
+        /* 미니멀 원형 물주기 단추 */
+        .quick-water-btn { background-color: #0288d1; color: white; border: none; width: 42px; height: 44px; border-radius: 50%; font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(2,136,209,0.15); transition: background 0.2s; }
+        .quick-water-btn:hover { background-color: #01579b; }
 
         /* 하단 일괄 플로팅 바 */
         .floating-action-bar { display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; z-index: 9999; justify-content: space-between; align-items: center; box-sizing: border-box; animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
@@ -390,6 +364,7 @@
         displayPlants();
     }
 
+    // 🌟 안전한 버튼 클릭 패러다임으로 리스트 렌더러 완전 복구
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -435,125 +410,36 @@
             const isChecked = checkedIndices.includes(originalIndex);
             const imageSrc = plant.image || 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=500&auto=format&fit=crop&q=60';
 
-            const cardWrapper = document.createElement('div');
+            const card = document.createElement('div');
+            card.className = 'plant-card';
             
             if(viewMode === 'list') {
-                cardWrapper.className = 'swipe-rail';
-                cardWrapper.innerHTML = `
-                    <div class="swipe-bg-text" id="swipeBg-${originalIndex}">💧 𝗠𝗶𝘀𝘀𝗶𝗼𝗻 완료</div>
-                    <div class="plant-card" id="card-${originalIndex}" data-index="${originalIndex}">
-                        <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
-                        <img src="${imageSrc}" class="plant-img">
-                        <div class="plant-info">
-                            <div class="card-text-zone">
-                                <h3>${plant.name}</h3>
-                                <div class="compact-date-badge ${plant.statusClass}">${plant.compactDateText}</div>
-                            </div>
+                // 원형 💧 버튼 터치 방식으로 완전 안전 복구 (카드 바디 클릭 시 상세창 연결)
+                card.innerHTML = `
+                    <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
+                    <img src="${imageSrc}" class="plant-img" onclick="openPlantDetail(${originalIndex})">
+                    <div class="plant-info" onclick="openPlantDetail(${originalIndex})">
+                        <div class="card-text-zone">
+                            <h3>${plant.name}</h3>
+                            <div class="compact-date-badge ${plant.statusClass}">${plant.compactDateText}</div>
+                        </div>
+                        <div class="card-buttons" onclick="event.stopPropagation();">
+                            <button class="quick-water-btn" onclick="waterPlant(${originalIndex})">💧</button>
                         </div>
                     </div>
                 `;
-                listContainer.appendChild(cardWrapper);
-                bindSwipeEvents(originalIndex);
             } else {
-                cardWrapper.className = 'plant-card';
-                cardWrapper.innerHTML = `
+                card.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
-                    <button class="shelf-action-trigger" onclick="event.stopPropagation(); startEdit(${originalIndex});">⚙️</button>
+                    <button class="shelf-action-trigger" onclick="event.stopPropagation(); openPlantDetail(${originalIndex});">⚙️</button>
                     <div class="shelf-dday status-${plant.statusClass}" onclick="event.stopPropagation(); openPlantDetail(${originalIndex})">${plant.shelfDdayText}</div>
                     <img src="${imageSrc}" class="plant-img" onclick="openPlantDetail(${originalIndex})">
                     <div class="plant-info" onclick="openPlantDetail(${originalIndex})">
                         <h3>${plant.name}</h3>
                     </div>
                 `;
-                listContainer.appendChild(cardWrapper);
             }
-        });
-    }
-
-    // 🌟 안전성과 터치 감도를 전면 재조정하고 버그를 수정한 스와이프 리스너 함수
-    function bindSwipeEvents(index) {
-        const card = document.getElementById(`card-${index}`);
-        const bgText = document.getElementById(`swipeBg-${index}`);
-        if(!card) return;
-
-        let startX = 0;
-        let currentX = 0;
-        let isSwiping = false;
-        const threshold = 120;
-
-        // [모바일 터치 시스템 연동]
-        card.addEventListener('touchstart', (e) => {
-            startX = e.touches[0].clientX;
-            isSwiping = true;
-            card.style.transition = 'none';
-        }, { passive: true });
-
-        card.addEventListener('touchmove', (e) => {
-            if(!isSwiping) return;
-            currentX = e.touches[0].clientX - startX;
-            if(currentX > 0) {
-                card.style.transform = `translateX(${currentX}px)`;
-                bgText.style.opacity = Math.min(currentX / threshold, 1);
-            }
-        }, { passive: true });
-
-        card.addEventListener('touchend', (e) => {
-            if(!isSwiping) return;
-            isSwiping = false;
-            card.style.transition = 'transform 0.15s ease-out';
-
-            if(currentX >= threshold) {
-                card.style.transform = `translateX(100%)`;
-                setTimeout(() => { waterPlant(index); }, 150);
-            } else {
-                card.style.transform = 'translateX(0)';
-                bgText.style.opacity = 0;
-                // 단순 터치 판정 분기 (미세 움직임 무시하고 디테일창 띄우기)
-                if(Math.abs(currentX) < 8) { openPlantDetail(index); }
-            }
-            currentX = 0;
-        });
-
-        // [PC 마우스 시스템 연동 - 전역 이벤트 충돌 완벽 차단 기법 적용]
-        const mouseMoveHandler = (e) => {
-            if(!isSwiping) return;
-            currentX = e.clientX - startX;
-            if(currentX > 0) {
-                card.style.transform = `translateX(${currentX}px)`;
-                bgText.style.opacity = Math.min(currentX / threshold, 1);
-            }
-        };
-
-        const mouseUpHandler = () => {
-            if(!isSwiping) return;
-            isSwiping = false;
-            card.style.transition = 'transform 0.15s ease-out';
-
-            if(currentX >= threshold) {
-                card.style.transform = `translateX(100%)`;
-                setTimeout(() => { waterPlant(index); }, 150);
-            } else {
-                card.style.transform = 'translateX(0)';
-                bgText.style.opacity = 0;
-                if(Math.abs(currentX) < 8) { openPlantDetail(index); }
-            }
-            currentX = 0;
-            window.removeOuterListeners();
-        };
-
-        const removeOuterListeners = () => {
-            window.removeEventListener('mousemove', mouseMoveHandler);
-            window.removeEventListener('mouseup', mouseUpHandler);
-        };
-        window.removeOuterListeners = removeOuterListeners; // 바인딩 청소용 매크로 저장
-
-        card.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            isSwiping = true;
-            card.style.transition = 'none';
-            
-            window.addEventListener('mousemove', mouseMoveHandler);
-            window.addEventListener('mouseup', mouseUpHandler);
+            listContainer.appendChild(card);
         });
     }
 
@@ -677,7 +563,6 @@
         if (checkedIndices.length > 0) { text.innerText = `🌿 x ${checkedIndices.length}`; bar.style.display = 'flex'; } else { bar.style.display = 'none'; }
     }
 
-    // 🌟 오타 완벽 복구: plants 정상 구조 배열 연동 완료
     function executeBulkWatering() {
         if (checkedIndices.length === 0) return;
         const now = new Date(); now.setHours(12, 0, 0, 0);
