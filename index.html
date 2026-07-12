@@ -58,7 +58,7 @@
         .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .view-toggle-btn.active { background-color: #2e7d32; color: #fff; }
 
-        /* 리스트 뷰 스타일 */
+        /* [1] 리스트 뷰 스타일 구조 */
         .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
         .plant-list.view-list .plant-card {
             background: #fff; border: 1px solid #f0f2f0; border-radius: 20px; overflow: hidden; display: flex; align-items: center; padding: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.01); transition: transform 0.2s ease;
@@ -80,7 +80,7 @@
 
         .plant-list.view-list .card-buttons { display: flex; align-items: center; padding-left: 10px; }
 
-        /* 선반(Shelf) 뷰 스타일 */
+        /* [2] 🪵 선반(Shelf) 뷰 스타일 구조 */
         .plant-list.view-shelf {
             display: grid; grid-template-columns: repeat(3, 1fr); row-gap: 35px; column-gap: 10px; padding: 20px 8px;
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
@@ -100,10 +100,14 @@
         .plant-list.view-shelf .shelf-dday.status-today { background-color: #0288d1; }
         .plant-list.view-shelf .shelf-dday.status-urgent { background-color: #d32f2f; }
 
-        /* 체크박스 및 기어 단추 공통 */
+        /* 체크박스 및 기어 단추 공통 위치 */
         .checkbox-container { position: absolute; top: 6px; left: 6px; z-index: 5; background: rgba(255, 255, 255, 0.9); padding: 4px; border-radius: 6px; display: flex; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
         .plant-checkbox { width: 15px; height: 16px; cursor: pointer; margin: 0; }
-        .plant-list.view-list .shelf-dday, .plant-list.view-list .shelf-action-trigger { display: none; }
+        
+        /* 🌟 중요 스타일 격리 처리 */
+        .plant-list.view-list .shelf-dday, 
+        .plant-list.view-list .shelf-action-trigger { display: none !important; }
+        
         .plant-list.view-shelf .shelf-action-trigger { position: absolute; top: 6px; right: 6px; z-index: 5; background: rgba(255,255,255,0.9); border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; display: flex; align-items: center; justify-content: center; }
 
         /* 미니멀 원형 물주기 단추 */
@@ -274,7 +278,6 @@
 </div>
 
 <script>
-    // 🌟 버그 방어막: 초기 변수를 null로 완전하게 격리 고정
     let plants = JSON.parse(localStorage.getItem('plants')) || [];
     let selectedDayIndex = null; 
     let customSelectedDateStr = null; 
@@ -299,12 +302,12 @@
         }
     }
 
+    // 주간 일정 캘린더 드로잉
     function renderWeekCalendar() {
         const container = document.getElementById('weekDaysContainer');
         container.innerHTML = '';
 
         const allCard = document.createElement('div');
-        // 강제 필터와 탭 하이라이트 동기화 로직 전면 검증 개조
         allCard.className = `day-card ${(selectedDayIndex === null && customSelectedDateStr === null) ? 'active' : ''}`;
         allCard.innerHTML = `<div class="day-name">ALL</div><div class="day-date">🔄</div>`;
         allCard.onclick = () => selectDay(null);
@@ -367,6 +370,7 @@
         displayPlants();
     }
 
+    // 🌟 핵심 교정 파트: 모드별 HTML 생성을 엄격하게 완전히 분리 처리
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -394,7 +398,6 @@
             return { ...plant, nextDateStr: nextWatered.toISOString().split('T')[0], diffDays, statusClass, compactDateText, shelfDdayText };
         });
 
-        // 🌟 버그 박멸 핵심 연동부: 두 인덱스가 모두 null일 때는 절대 필터링을 걸지 않고 모든 리스트를 통과시킵니다.
         if (customSelectedDateStr !== null) { 
             displayList = displayList.filter(p => p.nextDateStr === customSelectedDateStr);
             listTitle.innerText = `📅 ${customSelectedDateStr}`; 
@@ -403,7 +406,6 @@
             displayList = displayList.filter(p => p.nextDateStr === targetDateStr);
             listTitle.innerText = `📅 ${currentWeekDays[selectedDayIndex].name}`; 
         } else { 
-            // 둘 다 null이면 필터링 없이 전체 통과 (초기화면 리스트 소실 문제 완전 해결)
             listTitle.innerText = "📋 ALL"; 
         }
 
@@ -424,6 +426,7 @@
             const card = document.createElement('div');
             card.className = 'plant-card';
             
+            // 🌟 모드 분기 시 잘못된 버튼 코드가 상단으로 튀어 올라가는 DOM 간섭현상 원천 차단
             if(viewMode === 'list') {
                 card.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
@@ -657,10 +660,9 @@
         } catch (e) { alert("⚠️"); }
     }
 
-    // 🌟 첫 실행부 완전 강제 개조 동기화
     calculateCurrentWeek(); 
     renderWeekCalendar(); 
-    displayPlants(); // 탭 필터링이 풀린 상태에서 리스트를 맨 먼저 그립니다.
+    displayPlants(); 
     updateTodayWaterBadgeCount();
 </script>
 
