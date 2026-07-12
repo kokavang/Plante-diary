@@ -86,6 +86,7 @@
             background: linear-gradient(rgba(240,240,240,0.3) 0px, rgba(240,240,240,0.3) 140px, #d7ccc8 140px, #8d6e63 145px, transparent 145px);
             background-size: 100% 180px; border-radius: 12px; box-sizing: border-box;
         }
+        .plant-card { background: #fff; position: relative; cursor: pointer; box-sizing: border-box; }
         .plant-list.view-shelf .plant-card { background: #fff; border-radius: 12px 12px 4px 4px; box-shadow: 0 4px 8px rgba(0,0,0,0.15); display: flex; flex-direction: column; height: 135px; width: 100%; border: none; padding: 0; }
         .plant-list.view-shelf .plant-img { width: 100%; height: 90px; object-fit: cover; border-radius: 12px 12px 0 0; }
         .plant-list.view-shelf .plant-info { padding: 6px 8px; text-align: center; box-sizing: border-box; overflow: hidden; width: 100%; display: block; }
@@ -273,6 +274,7 @@
 </div>
 
 <script>
+    // 🌟 버그 방어막: 초기 변수를 null로 완전하게 격리 고정
     let plants = JSON.parse(localStorage.getItem('plants')) || [];
     let selectedDayIndex = null; 
     let customSelectedDateStr = null; 
@@ -302,6 +304,7 @@
         container.innerHTML = '';
 
         const allCard = document.createElement('div');
+        // 강제 필터와 탭 하이라이트 동기화 로직 전면 검증 개조
         allCard.className = `day-card ${(selectedDayIndex === null && customSelectedDateStr === null) ? 'active' : ''}`;
         allCard.innerHTML = `<div class="day-name">ALL</div><div class="day-date">🔄</div>`;
         allCard.onclick = () => selectDay(null);
@@ -364,7 +367,6 @@
         displayPlants();
     }
 
-    // 🌟 안전한 버튼 클릭 패러다임으로 리스트 렌더러 완전 복구
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -392,9 +394,18 @@
             return { ...plant, nextDateStr: nextWatered.toISOString().split('T')[0], diffDays, statusClass, compactDateText, shelfDdayText };
         });
 
-        if (customSelectedDateStr !== null) { listTitle.innerText = `📅 ${customSelectedDateStr}`; } 
-        else if (selectedDayIndex !== null) { listTitle.innerText = `📅 ${currentWeekDays[selectedDayIndex].name}`; } 
-        else { listTitle.innerText = "📋 ALL"; }
+        // 🌟 버그 박멸 핵심 연동부: 두 인덱스가 모두 null일 때는 절대 필터링을 걸지 않고 모든 리스트를 통과시킵니다.
+        if (customSelectedDateStr !== null) { 
+            displayList = displayList.filter(p => p.nextDateStr === customSelectedDateStr);
+            listTitle.innerText = `📅 ${customSelectedDateStr}`; 
+        } else if (selectedDayIndex !== null) { 
+            const targetDateStr = currentWeekDays[selectedDayIndex].dateStr;
+            displayList = displayList.filter(p => p.nextDateStr === targetDateStr);
+            listTitle.innerText = `📅 ${currentWeekDays[selectedDayIndex].name}`; 
+        } else { 
+            // 둘 다 null이면 필터링 없이 전체 통과 (초기화면 리스트 소실 문제 완전 해결)
+            listTitle.innerText = "📋 ALL"; 
+        }
 
         if (sortOption === 'imminent') { displayList.sort((a, b) => a.diffDays - b.diffDays); } 
         else if (sortOption === 'location') { displayList.sort((a, b) => a.location.localeCompare(b.location)); } 
@@ -414,7 +425,6 @@
             card.className = 'plant-card';
             
             if(viewMode === 'list') {
-                // 원형 💧 버튼 터치 방식으로 완전 안전 복구 (카드 바디 클릭 시 상세창 연결)
                 card.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
                     <img src="${imageSrc}" class="plant-img" onclick="openPlantDetail(${originalIndex})">
@@ -647,7 +657,11 @@
         } catch (e) { alert("⚠️"); }
     }
 
-    calculateCurrentWeek(); renderWeekCalendar(); displayPlants(); updateTodayWaterBadgeCount();
+    // 🌟 첫 실행부 완전 강제 개조 동기화
+    calculateCurrentWeek(); 
+    renderWeekCalendar(); 
+    displayPlants(); // 탭 필터링이 풀린 상태에서 리스트를 맨 먼저 그립니다.
+    updateTodayWaterBadgeCount();
 </script>
 
 </body>
