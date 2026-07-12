@@ -13,7 +13,7 @@
             justify-content: center;
             padding: 20px;
             margin: 0;
-            padding-bottom: 110px; /* 플로팅 바가 카드를 가리지 않도록 바닥 여백을 조금 더 확보 */
+            padding-bottom: 110px;
         }
         .container {
             width: 100%;
@@ -41,8 +41,32 @@
         }
         .header-buttons {
             display: flex;
-            gap: 6px;
+            align-items: center;
+            gap: 8px;
         }
+        
+        /* 🌟 오늘 물주기 잔여 카운트 배지 스타일 */
+        .today-water-badge {
+            background-color: #e1f5fe;
+            color: #0288d1;
+            border: 1px solid #b3e5fc;
+            padding: 6px 12px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 6px rgba(2,136,209,0.1);
+            transition: all 0.3s ease;
+        }
+        .today-water-badge.done {
+            background-color: #f5f5f5;
+            color: #9e9e9e;
+            border-color: #e0e0e0;
+            box-shadow: none;
+        }
+
         .month-trigger-btn {
             background-color: #0288d1;
             color: white;
@@ -202,25 +226,9 @@
         .quick-water-btn:hover { background-color: #01579b; }
         .edit-btn { background: #fff; border: 1px solid #ddd; padding: 5px 10px; font-size: 12px; border-radius: 6px; cursor: pointer; color: #f57c00; border-color: #f57c00; }
 
-        /* 🌟 하단 일괄 플로팅 바 - 스크롤 상관없이 스마트폰 최하단에 항상 팝업 고정 */
+        /* 하단 일괄 플로팅 바 */
         .floating-action-bar { 
-            display: none; 
-            position: fixed; /* 브라우저 뷰포트 화면 전체 기준으로 절대 고정 */
-            bottom: 24px; /* 바닥 레이어에서 살짝 띄워 모던한 느낌 연출 */
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
-            max-width: 440px; /* 전체 컨테이너와 너비 대칭 구성 */
-            background-color: #0288d1;
-            color: white;
-            padding: 15px 20px;
-            border-radius: 16px;
-            box-shadow: 0 8px 24px rgba(2,136,209,0.3);
-            z-index: 9999; /* 다른 모달이나 식물 카드 위로 무조건 띄우는 최상위 레이어 설정 */
-            justify-content: space-between;
-            align-items: center;
-            box-sizing: border-box;
-            animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 살짝 통통 튀며 올라오는 네이티브 앱 연출 효과 */
+            display: none; position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 440px; background-color: #0288d1; color: white; padding: 15px 20px; border-radius: 16px; box-shadow: 0 8px 24px rgba(2,136,209,0.3); z-index: 9999; justify-content: space-between; align-items: center; box-sizing: border-box; animation: bounceUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
         @keyframes bounceUp {
             from { transform: translate(-50%, 150%); opacity: 0; }
@@ -265,6 +273,8 @@
     <div class="header">
         <h1>🌱 🗓️</h1>
         <div class="header-buttons">
+            <!-- 🌟 새로 도입된 오늘 줄 물주기 카운팅 배지 컴포넌트 -->
+            <div class="today-water-badge" id="todayWaterBadge">💧 <span id="todayWaterCount">0</span></div>
             <button class="month-trigger-btn" onclick="openMonthModal()">📅</button>
             <button class="add-trigger-btn" onclick="openModal()">+ 🌿</button>
         </div>
@@ -311,7 +321,7 @@
     </div>
 </div>
 
-<!-- 🌟 하단 일괄 플로팅 바 (DOM 배치 최적화 및 CSS 고정 완료) -->
+<!-- 하단 플로팅 바 -->
 <div class="floating-action-bar" id="floatingBar">
     <div class="selected-count" id="selectedCountText">🌿 0</div>
     <button class="bulk-water-btn" onclick="executeBulkWatering()">💧 완료</button>
@@ -427,6 +437,31 @@
         return nextWatered.toISOString().split('T')[0];
     }
 
+    // 🌟 오늘 날짜 기준으로 미결된(오늘이거나 오늘보다 지났는데 아직 물 안 준) 식물 개수를 체크하는 스마트 연동 함수
+    function updateTodayWaterBadgeCount() {
+        const badge = document.getElementById('todayWaterBadge');
+        const countText = document.getElementById('todayWaterCount');
+        
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        // 오늘 날짜 및 그 이전에 예정된 식물들의 개수 계산
+        const todayTodoCount = plants.filter(plant => {
+            const nextDateStr = getNextWaterDateStr(plant);
+            return nextDateStr <= todayStr;
+        }).length;
+
+        countText.innerText = todayTodoCount;
+
+        // 오늘 미션이 전부 끝나면 회색 체크 박스 레이아웃으로 모던하게 전환
+        if (todayTodoCount === 0) {
+            badge.className = "today-water-badge done";
+            badge.innerHTML = "✔️ Done";
+        } else {
+            badge.className = "today-water-badge";
+            badge.innerHTML = `💧 <span id="todayWaterCount">${todayTodoCount}</span>`;
+        }
+    }
+
     function selectDay(index) {
         selectedDayIndex = index;
         customSelectedDateStr = null; 
@@ -530,6 +565,7 @@
         });
     }
 
+    // 🌟 개별 물주기 완료 시 연동 업데이트 호출
     function waterPlant(index) {
         const now = new Date();
         now.setHours(12, 0, 0, 0);
@@ -539,6 +575,7 @@
         saveAndRender();
     }
 
+    // 월간 달력 엔진
     function buildMonthlyCalendar() {
         const gridBody = document.getElementById('calendarGridBody');
         const monthTitle = document.getElementById('calendarMonthTitle');
@@ -595,7 +632,7 @@
 
     function moveMonth(dir) { calendarDate.setMonth(calendarDate.getMonth() + dir); buildMonthlyCalendar(); }
     function openMonthModal() { document.getElementById('monthModal').style.display = 'flex'; buildMonthlyCalendar(); }
-    function closeMonthModal() { document.getElementById('monthModal').style.display = 'none'; }
+    function closeMonthModal() { document.getElementById('monthModal').style.none; }
 
     function toggleCheck(index, checkbox) {
         if (checkbox.checked) { if (!checkedIndices.includes(index)) checkedIndices.push(index); } 
@@ -603,7 +640,6 @@
         updateFloatingBar();
     }
     
-    // 🌟 플로팅 바 트리거 갱신
     function updateFloatingBar() {
         const bar = document.getElementById('floatingBar');
         const text = document.getElementById('selectedCountText');
@@ -615,6 +651,7 @@
         }
     }
 
+    // 🌟 일괄 물주기 완료 시 연동 업데이트 호출
     function executeBulkWatering() {
         if (checkedIndices.length === 0) return;
         const now = new Date(); now.setHours(12, 0, 0, 0);
@@ -708,16 +745,20 @@
         if (e.target == document.getElementById('monthModal')) closeMonthModal();
     }
 
+    // 🌟 데이터를 보존하고 화면을 갱신하는 공통 실행부에 뱃지 카운트 새로고침 기능 주입
     function saveAndRender() {
         try {
             localStorage.setItem('plants', JSON.stringify(plants));
-            renderWeekCalendar(); displayPlants();
+            renderWeekCalendar(); 
+            displayPlants();
+            updateTodayWaterBadgeCount(); // 뱃지 수치 새로고침
         } catch (e) { alert("⚠️"); }
     }
 
     calculateCurrentWeek();
     renderWeekCalendar();
     displayPlants();
+    updateTodayWaterBadgeCount(); // 최초 구동 시 뱃지 수치 동기화
 </script>
 
 </body>
