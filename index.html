@@ -59,17 +59,15 @@
         .view-toggle-btn { padding: 6px 12px; border: 1px solid #2e7d32; background-color: #fff; color: #2e7d32; border-radius: 10px; font-size: 13px; font-weight: bold; cursor: pointer; }
         .view-toggle-btn.active { background-color: #2e7d32; color: #fff; }
 
-        /* 🌟 스와이프 제스처 적용을 위한 특수 레일 컨테이너 구조 */
+        /* 리스트뷰 스와이프 구조 */
         .plant-list.view-list { display: flex; flex-direction: column; gap: 12px; }
         
         .swipe-rail {
             position: relative;
-            background-color: #0288d1; /* 밀었을 때 드러나는 파란색 물주기 배경 */
+            background-color: #0288d1;
             border-radius: 20px;
             overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.01);
         }
-        /* 스와이프 배경 텍스트 기호 안내 */
         .swipe-bg-text {
             position: absolute;
             left: 20px;
@@ -82,7 +80,6 @@
             align-items: center;
             gap: 6px;
             opacity: 0;
-            transition: opacity 0.1s ease;
         }
 
         .plant-list.view-list .plant-card {
@@ -96,8 +93,7 @@
             z-index: 2;
             cursor: grab;
             user-select: none;
-            touch-action: pan-y; /* 세로 스크롤은 브라우저에 맡기고 가로 스와이프만 JS로 탈취 */
-            transition: transform 0.15s ease-out;
+            touch-action: pan-y;
         }
         .plant-list.view-list .plant-card:active { cursor: grabbing; }
         .plant-list.view-list .plant-img { width: 68px; height: 68px; object-fit: cover; border-radius: 14px; pointer-events: none; }
@@ -201,7 +197,7 @@
     
     <!-- 주간 캘린더 -->
     <div class="week-container">
-        <div class="section-title">📅 𝗠𝗶𝗻𝗶</div>
+        <div class="section-title">📅 𝗠𝗶𝗻ｉ</div>
         <div class="week-days" id="weekDaysContainer"></div>
     </div>
 
@@ -393,7 +389,6 @@
         displayPlants();
     }
 
-    // 메인 리스트 렌더링 - 🌟 스와이프 이벤트를 탑재한 콤팩트 카드 배치
     function displayPlants() {
         const listContainer = document.getElementById('plantList');
         const listTitle = document.getElementById('listTitle');
@@ -442,7 +437,6 @@
             const cardWrapper = document.createElement('div');
             
             if(viewMode === 'list') {
-                // 🌟 리스트뷰 전용: 밀어서 물주는 스와이프 레일 래퍼 조립
                 cardWrapper.className = 'swipe-rail';
                 cardWrapper.innerHTML = `
                     <div class="swipe-bg-text" id="swipeBg-${originalIndex}">💧 𝗠𝗶𝘀𝘀𝗶𝗼𝗻 완료</div>
@@ -458,11 +452,8 @@
                     </div>
                 `;
                 listContainer.appendChild(cardWrapper);
-                
-                // 생성된 카드에 스와이프 이벤트 리스너 밀착 연동
                 bindSwipeEvents(originalIndex);
             } else {
-                // 선반뷰: 기존 격자 구조 유지
                 cardWrapper.className = 'plant-card';
                 cardWrapper.innerHTML = `
                     <div class="checkbox-container" onclick="event.stopPropagation();"><input type="checkbox" class="plant-checkbox" ${isChecked ? 'checked' : ''} onchange="toggleCheck(${originalIndex}, this)"></div>
@@ -478,7 +469,6 @@
         });
     }
 
-    // 🌟 스와이프 제스처 핵심 수학 및 물리 렌더링 알고리즘
     function bindSwipeEvents(index) {
         const card = document.getElementById(`card-${index}`);
         const bgText = document.getElementById(`swipeBg-${index}`);
@@ -487,20 +477,17 @@
         let startX = 0;
         let currentX = 0;
         let isSwiping = false;
-        const threshold = 120; // 이 거리(px) 이상 밀었을 때 물주기 완료 트리거 발동
+        const threshold = 120;
 
-        // 터치 기반 스마트폰 제스처 처리
         card.addEventListener('touchstart', (e) => {
             startX = e.touches[0].clientX;
             isSwiping = true;
-            card.style.transition = 'none'; // 실시간 반응을 위해 애니메이션 일시 해제
+            card.style.transition = 'none';
         }, { passive: true });
 
         card.addEventListener('touchmove', (e) => {
             if(!isSwiping) return;
             currentX = e.touches[0].clientX - startX;
-
-            // 오른쪽으로 밀 때만 스와이프 작동 제어 (음수 분가 제한)
             if(currentX > 0) {
                 card.style.transform = `translateX(${currentX}px)`;
                 bgText.style.opacity = Math.min(currentX / threshold, 1);
@@ -510,52 +497,11 @@
         card.addEventListener('touchend', (e) => {
             if(!isSwiping) return;
             isSwiping = false;
-            
-            card.style.transition = 'transform 0.2s ease-out';
-
-            if(currentX >= threshold) {
-                // [성공 조건] 임계점을 넘었으므로 스와이프 완료 모션 실행 후 물주기 시스템 연동
-                card.style.transform = `translateX(100%)`;
-                setTimeout(() => {
-                    waterPlant(index);
-                }, 200);
-            } else {
-                // [실패 / 단순 터치 조건] 다시 원위치로 튕겨서 복귀
-                card.style.transform = 'translateX(0)';
-                bgText.style.opacity = 0;
-
-                // 스와이프를 하지 않고 미세하게 터치만 한 경우 상세페이지 구동 분기 확보
-                if(Math.abs(currentX) < 5) {
-                    openPlantDetail(index);
-                }
-            }
-            currentX = 0;
-        });
-
-        // 데스크톱 마우스 드래그 호환성 연동 처리
-        card.addEventListener('mousedown', (e) => {
-            startX = e.clientX;
-            isSwiping = true;
-            card.style.transition = 'none';
-        });
-
-        window.addEventListener('mousemove', (e) => {
-            if(!isSwiping) return;
-            currentX = e.clientX - startX;
-            if(currentX > 0) {
-                card.style.transform = `translateX(${currentX}px)`;
-                bgText.style.opacity = Math.min(currentX / threshold, 1);
-            }
-        });
-
-        window.addEventListener('mouseup', () => {
-            if(!isSwiping) return;
-            isSwiping = false;
-            card.style.transition = 'transform 0.2s ease-out';
+            card.style.transition = 'transform 0.15s ease-out';
 
             if(currentX >= threshold) {
                 card.style.transform = `translateX(100%)`;
-                setTimeout(() => { waterPlant(index); }, 200);
+                setTimeout(() => { waterPlant(index); }, 150);
             } else {
                 card.style.transform = 'translateX(0)';
                 bgText.style.opacity = 0;
@@ -563,9 +509,48 @@
             }
             currentX = 0;
         });
+
+        // 마우스 스와이프 인터랙션 보정
+        card.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isSwiping = true;
+            card.style.transition = 'none';
+        });
+
+        const mouseMoveHandler = (e) => {
+            if(!isSwiping) return;
+            currentX = e.clientX - startX;
+            if(currentX > 0) {
+                card.style.transform = `translateX(${currentX}px)`;
+                bgText.style.opacity = Math.min(currentX / threshold, 1);
+            }
+        };
+
+        const mouseUpHandler = () => {
+            if(!isSwiping) return;
+            isSwiping = false;
+            card.style.transition = 'transform 0.15s ease-out';
+
+            if(currentX >= threshold) {
+                card.style.transform = `translateX(100%)`;
+                setTimeout(() => { waterPlant(index); }, 150);
+            } else {
+                card.style.transform = 'translateX(0)';
+                bgText.style.opacity = 0;
+                if(Math.abs(currentX) < 5) { openPlantDetail(index); }
+            }
+            currentX = 0;
+            window.removeEventListener('mousemove', mouseMoveHandler);
+            window.removeEventListener('mouseup', mouseUpHandler);
+        };
+
+        card.addEventListener('mouseenter', () => {
+            if(isSwiping) return;
+            window.addEventListener('mousemove', mouseMoveHandler);
+            window.addEventListener('mouseup', mouseUpHandler);
+        });
     }
 
-    // 상세 정보 모달 활성화
     function openPlantDetail(index) {
         activeDetailIndex = index;
         const plant = plants[index];
@@ -596,7 +581,6 @@
         }
     }
 
-    // 타임라인 서브 앨범 렌더링
     function renderAlbumTimeline() {
         const container = document.getElementById('detailAlbumContainer'); container.innerHTML = '';
         const plant = plants[activeDetailIndex];
@@ -638,7 +622,6 @@
         reader.readAsDataURL(file);
     }
 
-    // 단독 스와이프/개별 물주기 실행 엔진
     function waterPlant(index) {
         const now = new Date(); now.setHours(12, 0, 0, 0);
         plants[index].lastDate = now.toISOString();
@@ -646,7 +629,6 @@
         updateFloatingBar(); saveAndRender();
     }
 
-    // 월간 달력 연동
     function buildMonthlyCalendar() {
         const gridBody = document.getElementById('calendarGridBody'); const monthTitle = document.getElementById('calendarMonthTitle'); gridBody.innerHTML = '';
         const year = calendarDate.getFullYear(); const month = calendarDate.getMonth();
@@ -689,10 +671,13 @@
         if (checkedIndices.length > 0) { text.innerText = `🌿 x ${checkedIndices.length}`; bar.style.display = 'flex'; } else { bar.style.display = 'none'; }
     }
 
+    // 🌟 오타 수정 완료: 기존 clans 원본 구조를 plants 규격 배열로 전면 정상화 교체
     function executeBulkWatering() {
         if (checkedIndices.length === 0) return;
         const now = new Date(); now.setHours(12, 0, 0, 0);
-        checkedIndices.forEach(index => { clans[index].lastDate = now.toISOString(); plants[index].lastDate = now.toISOString(); });
+        checkedIndices.forEach(index => { 
+            plants[index].lastDate = now.toISOString(); 
+        });
         checkedIndices = []; updateFloatingBar(); saveAndRender();
     }
     
@@ -735,7 +720,6 @@
         saveAndRender(); closeModal();
     }
 
-    // ⚙️ 기어 단추를 누르면 수정 페이지 서랍이 바로 호출됨
     function startEdit(index) {
         editIndex = index; const plant = plants[index];
         document.getElementById('plantName').value = plant.name; document.getElementById('plantLocation').value = plant.location;
